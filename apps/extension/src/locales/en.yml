@@ -43,6 +43,11 @@ options:
     advancedConfig:
       show: Show Advanced Config
       hide: Hide Advanced Config
+    testConnection:
+      button: Test Connection
+      testing: Testing...
+      success: Connection successful!
+      failed: Connection failed
   general:
     title: General
     readConfig:
