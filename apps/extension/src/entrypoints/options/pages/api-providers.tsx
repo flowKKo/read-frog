@@ -182,7 +182,7 @@ function TestConnectionButton({
             )
           : (
               <span className="text-xs">
-                Test Connection
+                {i18n.t('options.apiProviders.testConnection.button')}
               </span>
             )}
       </Button>
