@@ -46,8 +46,6 @@ options:
     testConnection:
       button: Test Connection
       testing: Testing...
-      success: Connection successful!
-      failed: Connection failed
   general:
     title: General
     readConfig:

@@ -46,8 +46,6 @@ options:
     testConnection:
       button: 연결 테스트
       testing: 테스트 중...
-      success: 연결 성공!
-      failed: 연결 실패
   general:
     title: 일반
     readConfig:

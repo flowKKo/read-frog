@@ -7,10 +7,9 @@ import { Input } from '@repo/ui/components/input'
 import { cn } from '@repo/ui/lib/utils'
 import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
 import LoadingDots from '@/components/loading-dots'
+import { useAPIConnection } from '@/hooks/api-connection'
 import { API_PROVIDER_NAMES } from '@/types/config/provider'
-import { testAPIConnectivity } from '@/utils/api-test-connection'
 import { configFields } from '@/utils/atoms/config'
 import { API_PROVIDER_ITEMS } from '@/utils/constants/config'
 import { ConfigCard } from '../components/config-card'
@@ -30,8 +29,6 @@ export function ApiProvidersPage() {
 export function ProviderConfigCard({ provider }: { provider: APIProviderNames }) {
   const [providersConfig, setProvidersConfig] = useAtom(configFields.providersConfig)
   const [showAPIKey, setShowAPIKey] = useState(false)
-  const [isTestingConnection, setIsTestingConnection] = useState(false)
-  const [testResult, setTestResult] = useState<'success' | 'error' | null>(null)
 
   return (
     <ConfigCard
@@ -53,14 +50,8 @@ export function ProviderConfigCard({ provider }: { provider: APIProviderNames })
             <label className="text-sm font-medium">
               API Key
             </label>
-            <TestConnectionButton
+            <ConnectionTest
               provider={provider}
-              apiKey={providersConfig[provider].apiKey}
-              baseURL={providersConfig[provider].baseURL}
-              isTestingConnection={isTestingConnection}
-              setIsTestingConnection={setIsTestingConnection}
-              testResult={testResult}
-              setTestResult={setTestResult}
             />
           </div>
           <Input
@@ -97,86 +88,66 @@ export function ProviderConfigCard({ provider }: { provider: APIProviderNames })
   )
 }
 
-function TestConnectionButton({
-  provider,
-  apiKey,
-  baseURL,
-  isTestingConnection,
-  setIsTestingConnection,
-  testResult,
-  setTestResult,
-}: {
-  provider: APIProviderNames
-  apiKey?: string
-  baseURL?: string
-  isTestingConnection: boolean
-  setIsTestingConnection: (testing: boolean) => void
-  testResult: 'success' | 'error' | null
-  setTestResult: (result: 'success' | 'error' | null) => void
-}) {
-  const handleTestConnection = async () => {
-    if (!apiKey || apiKey.trim() === '') {
-      setTestResult('error')
-      toast.error('Connection failed: API Key is required')
-      return
-    }
-    setIsTestingConnection(true)
-    setTestResult(null)
-    try {
-      const result = await testAPIConnectivity(provider, apiKey, baseURL)
-      if (result.success) {
-        setTestResult('success')
-      }
-      else {
-        setTestResult('error')
-        toast.error(`Connection failed: ${result.message}`)
-      }
-    }
-    catch (error) {
-      setTestResult('error')
-      toast.error(`Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
-    }
-    finally {
-      setIsTestingConnection(false)
-    }
+function ConnectionSuccessIcon() {
+  return (
+    <div className="flex items-center justify-center size-5 rounded-full bg-green-200 dark:bg-green-800/50">
+      <Icon
+        icon="tabler:check"
+        className="size-3.5 text-green-700 dark:text-green-300 stroke-[2.5]"
+      />
+    </div>
+  )
+}
+
+function ConnectionErrorIcon() {
+  return (
+    <div className="flex items-center justify-center size-5 rounded-full bg-red-200 dark:bg-red-800/50">
+      <Icon
+        icon="tabler:x"
+        className="size-3.5 text-red-700 dark:text-red-300 stroke-[2.5]"
+      />
+    </div>
+  )
+}
+
+const ConnectionTestResultIconMap = {
+  success: <ConnectionSuccessIcon />,
+  error: <ConnectionErrorIcon />,
+}
+
+function ConnectionTest({ provider }: { provider: APIProviderNames }) {
+  const [providersConfig, _] = useAtom(configFields.providersConfig)
+  const { apiKey, baseURL } = providersConfig[provider]
+  const apiConnection = useAPIConnection({ provider })
+
+  const handleTestConnection = () => {
+    apiConnection.testConnection()
   }
 
-  // When API Key or Base URL changes, clear the test result
   useEffect(() => {
-    setTestResult(null)
+    apiConnection.reset()
   }, [apiKey, baseURL])
+
+  const testResult = apiConnection.isSuccess ? 'success' : apiConnection.isError ? 'error' : null
+  const ConnectionTestResultIcon = testResult ? ConnectionTestResultIconMap[testResult] : null
 
   return (
     <div className="flex items-center gap-2">
-      {testResult === 'success' && (
-        <div className="flex items-center justify-center size-5 rounded-full bg-green-200 dark:bg-green-800/50">
-          <Icon
-            icon="tabler:check"
-            className="size-3.5 text-green-700 dark:text-green-300 stroke-[2.5]"
-          />
-        </div>
-      )}
-      {testResult === 'error' && (
-        <div className="flex items-center justify-center size-5 rounded-full bg-red-200 dark:bg-red-800/50">
-          <Icon
-            icon="tabler:x"
-            className="size-3.5 text-red-700 dark:text-red-300 stroke-[2.5]"
-          />
-        </div>
-      )}
+      {ConnectionTestResultIcon}
+
       <Button
         size="sm"
         variant="outline"
         onClick={handleTestConnection}
-        disabled={isTestingConnection || !apiKey}
+        disabled={apiConnection.isPending || !apiKey}
         className="h-7 px-3"
       >
-        {isTestingConnection
+        {apiConnection.isPending
           ? (
               <div className="flex items-center gap-2">
                 <LoadingDots className="scale-75" />
                 <span className="text-xs">
-                  Testing...
+                  {i18n.t('options.apiProviders.testConnection.testing')}
                 </span>
               </div>
             )
