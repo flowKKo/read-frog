@@ -11,6 +11,7 @@ import { AlwaysTranslate } from './components/always-translate'
 import FloatingButton from './components/floating-button'
 import Hotkey from './components/hotkey-selector'
 import LanguageOptionsSelector from './components/language-options-selector'
+import MultiTranslateButton from './components/multi-translate-button'
 import QuickLinks from './components/quick-links'
 import ReadButton from './components/read-button'
 import ReadProviderSelector from './components/read-provider-selector'
@@ -39,6 +40,7 @@ function App() {
           <ReadButton />
           <TranslateButton />
         </div>
+        <MultiTranslateButton />
         <AlwaysTranslate />
         <Hotkey />
         <FloatingButton />

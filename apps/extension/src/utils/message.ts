@@ -25,6 +25,7 @@ interface ProtocolMap {
   backgroundFetch: (data: ProxyRequest) => Promise<ProxyResponse>
   // navigation
   openPage: (data: { url: string, active?: boolean }) => void
+  openMultiTranslatePage: () => void
 }
 
 export const { sendMessage, onMessage }

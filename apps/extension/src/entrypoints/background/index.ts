@@ -37,6 +37,14 @@ export default defineBackground(() => {
     browser.runtime.openOptionsPage()
   })
 
+  onMessage('openMultiTranslatePage', async () => {
+    logger.info('openMultiTranslatePage')
+    await browser.tabs.create({
+      url: browser.runtime.getURL('/multi-translate.html'),
+      active: true,
+    })
+  })
+
   onMessage('popupRequestReadArticle', async (message) => {
     sendMessage('readArticle', undefined, message.data.tabId)
   })

@@ -5,6 +5,7 @@ import { readUIMessageStream, streamText } from 'ai'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
+import { useMultiTranslate } from '@/hooks/use-multi-translate'
 import { ISO6393_TO_6391, LANG_CODE_TO_EN_NAME } from '@/types/config/languages'
 import { isPureTranslateProvider } from '@/types/config/provider'
 import { authClient } from '@/utils/auth/auth-client'
@@ -15,7 +16,19 @@ import { sendMessage } from '@/utils/message'
 import { getTranslatePrompt } from '@/utils/prompts/translate'
 import { getTranslateModel } from '@/utils/provider'
 import { trpc } from '@/utils/trpc/client'
-import { isTooltipVisibleAtom, isTranslatePopoverVisibleAtom, mouseClickPositionAtom, selectionContentAtom } from './atom'
+import { isTooltipVisibleAtom, isTranslatePopoverVisibleAtom, mouseClickPositionAtom, selectionContentAtom, showMultiTranslateAtom } from './atom'
+
+function getProviderDisplayName(provider: string) {
+  const names: Record<string, string> = {
+    google: 'Google Translate',
+    microsoft: 'Microsoft Translator',
+    deeplx: 'DeepL X',
+    openai: 'OpenAI',
+    deepseek: 'DeepSeek',
+    gemini: 'Google Gemini',
+  }
+  return names[provider] || provider
+}
 
 export function TranslateButton() {
   // const selectionContent = useAtomValue(selectionContentAtom)
@@ -44,10 +57,12 @@ export function TranslatePopover() {
   const [isVisible, setIsVisible] = useAtom(isTranslatePopoverVisibleAtom)
   const [isTranslating, setIsTranslating] = useState(false)
   const [translatedText, setTranslatedText] = useState<string | undefined>(undefined)
+  const [showMultiTranslate, setShowMultiTranslate] = useAtom(showMultiTranslateAtom)
   const mouseClickPosition = useAtomValue(mouseClickPositionAtom)
   const selectionContent = useAtomValue(selectionContentAtom)
   const popoverRef = useRef<HTMLDivElement>(null)
   const { data: session } = authClient.useSession()
+  const { results: multiResults, translateMultiple, reset: resetMultiTranslate } = useMultiTranslate()
 
   const createVocabulary = useMutation({
     ...trpc.vocabulary.create.mutationOptions(),
@@ -59,7 +74,9 @@ export function TranslatePopover() {
   const handleClose = useCallback(() => {
     setIsVisible(false)
     setTranslatedText(undefined)
-  }, [setIsVisible])
+    setShowMultiTranslate(false)
+    resetMultiTranslate()
+  }, [setIsVisible, setShowMultiTranslate, resetMultiTranslate])
 
   const handleCopy = useCallback(() => {
     if (translatedText) {
@@ -96,6 +113,14 @@ export function TranslatePopover() {
       // Error handled by mutation
     }
   }, [session?.user?.id, selectionContent, translatedText, createVocabulary])
+
+  const handleMoreResults = useCallback(async () => {
+    if (!selectionContent)
+      return
+
+    setShowMultiTranslate(true)
+    await translateMultiple(selectionContent)
+  }, [selectionContent, setShowMultiTranslate, translateMultiple])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -175,10 +200,12 @@ export function TranslatePopover() {
     return null
   }
 
+  const popoverWidth = showMultiTranslate ? 'w-[600px]' : 'w-[300px]'
+
   return (
     <div
       ref={popoverRef}
-      className="fixed z-[2147483647] bg-white dark:bg-zinc-800 border rounded-lg w-[300px] shadow-lg"
+      className={`fixed z-[2147483647] bg-white dark:bg-zinc-800 border rounded-lg ${popoverWidth} shadow-lg transition-all duration-200`}
       style={{
         left: mouseClickPosition.x,
         top: mouseClickPosition.y,
@@ -187,7 +214,9 @@ export function TranslatePopover() {
       <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center gap-2">
           <Icon icon="ri:translate" strokeWidth={0.8} className="size-4.5 text-zinc-600 dark:text-zinc-400" />
-          <h2 className="text-base font-medium text-zinc-900 dark:text-zinc-100">Translation</h2>
+          <h2 className="text-base font-medium text-zinc-900 dark:text-zinc-100">
+            {showMultiTranslate ? 'Multi-Translation Results' : 'Translation'}
+          </h2>
         </div>
         <button
           type="button"
@@ -197,32 +226,95 @@ export function TranslatePopover() {
           <Icon icon="tabler:x" strokeWidth={1} className="size-4 text-zinc-600 dark:text-zinc-400" />
         </button>
       </div>
+
       <div className="p-4 border-b">
-        <div className="border-b pb-4"><p className="text-sm text-zinc-600 dark:text-zinc-400">{selectionContent}</p></div>
-        <div className="pt-4">
-          <p className="text-sm">
-            {isTranslating && !translatedText && <Icon icon="svg-spinners:3-dots-bounce" />}
-            {translatedText}
-            {isTranslating && translatedText && ' ●'}
-          </p>
+        <div className="border-b pb-4">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">{selectionContent}</p>
         </div>
+
+        {!showMultiTranslate
+          ? (
+              <div className="pt-4">
+                <p className="text-sm">
+                  {isTranslating && !translatedText && <Icon icon="svg-spinners:3-dots-bounce" />}
+                  {translatedText}
+                  {isTranslating && translatedText && ' ●'}
+                </p>
+              </div>
+            )
+          : (
+              <div className="pt-4 space-y-3 max-h-[300px] overflow-y-auto">
+                {multiResults.map(result => (
+                  <div key={result.provider} className="border rounded-lg p-3 hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                          {getProviderDisplayName(result.provider)}
+                        </span>
+                        {result.loading && <Icon icon="svg-spinners:3-dots-bounce" className="size-3" />}
+                        {result.error && <Icon icon="tabler:exclamation-circle" className="size-3 text-red-500" />}
+                        {result.text && !result.loading && !result.error && (
+                          <Icon icon="tabler:check" className="size-3 text-green-500" />
+                        )}
+                      </div>
+                      {result.text && !result.error && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            navigator.clipboard.writeText(result.text!)
+                            toast.success(`${getProviderDisplayName(result.provider)} result copied!`)
+                          }}
+                          className="p-1 hover:bg-zinc-200 dark:hover:bg-zinc-600 rounded"
+                        >
+                          <Icon icon="tabler:copy" className="size-3 text-zinc-500" />
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-sm text-zinc-800 dark:text-zinc-200">
+                      {result.error
+                        ? (
+                            <span className="text-red-500 text-xs">{result.error}</span>
+                          )
+                        : (
+                            result.text || (result.loading ? 'Translating...' : 'No result')
+                          )}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
       </div>
+
       <div className="p-4 flex justify-between items-center">
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={!translatedText || createVocabulary.isPending}
-          className="flex items-center gap-2 px-3 py-1.5 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white text-sm rounded"
-        >
-          {createVocabulary.isPending
-            ? (
-                <Icon icon="svg-spinners:3-dots-bounce" className="size-4" />
-              )
-            : (
-                <Icon icon="tabler:bookmark-plus" strokeWidth={1} className="size-4" />
-              )}
-          {createVocabulary.isPending ? 'Saving...' : 'Save'}
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={!translatedText || createVocabulary.isPending}
+            className="flex items-center gap-2 px-3 py-1.5 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white text-sm rounded"
+          >
+            {createVocabulary.isPending
+              ? (
+                  <Icon icon="svg-spinners:3-dots-bounce" className="size-4" />
+                )
+              : (
+                  <Icon icon="tabler:bookmark-plus" strokeWidth={1} className="size-4" />
+                )}
+            {createVocabulary.isPending ? 'Saving...' : 'Save'}
+          </button>
+
+          {!showMultiTranslate && (
+            <button
+              type="button"
+              onClick={handleMoreResults}
+              className="flex items-center gap-2 px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white text-sm rounded"
+            >
+              <Icon icon="tabler:layers-intersect" strokeWidth={1} className="size-4" />
+              More Results
+            </button>
+          )}
+        </div>
+
         <button
           type="button"
           onClick={handleCopy}
