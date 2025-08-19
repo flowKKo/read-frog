@@ -5,13 +5,14 @@ import { Button } from '@repo/ui/components/button'
 import { Checkbox } from '@repo/ui/components/checkbox'
 import { Input } from '@repo/ui/components/input'
 import { cn } from '@repo/ui/lib/utils'
+import { useMutation } from '@tanstack/react-query'
 import { useAtom, useAtomValue } from 'jotai'
 import { useEffect, useState } from 'react'
 import LoadingDots from '@/components/loading-dots'
-import { useAPIConnection } from '@/hooks/api-connection'
 import { API_PROVIDER_NAMES } from '@/types/config/provider'
 import { configFields } from '@/utils/atoms/config'
-import { API_PROVIDER_ITEMS } from '@/utils/constants/config'
+import { API_PROVIDER_ITEMS, DEFAULT_TRANSLATE_MODELS } from '@/utils/constants/config'
+import { aiTranslate, deeplxTranslate } from '@/utils/host/translate/api'
 import { ConfigCard } from '../components/config-card'
 import { FieldWithLabel } from '../components/field-with-label'
 import { PageLayout } from '../components/page-layout'
@@ -45,15 +46,19 @@ export function ProviderConfigCard({ provider }: { provider: APIProviderNames })
       description={i18n.t(`options.apiProviders.description.${provider}`)}
     >
       <div className="flex flex-col gap-y-4">
-        <div className="flex flex-col gap-1" id={`${provider}-apiKey`}>
-          <div className="flex items-center justify-between">
-            <label className="text-sm font-medium">
-              API Key
-            </label>
-            <ConnectionTest
-              provider={provider}
-            />
-          </div>
+        <FieldWithLabel
+          label={(
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">
+                API Key
+              </span>
+              <ConnectionTestButton
+                provider={provider}
+              />
+            </div>
+          )}
+          id={`${provider}-apiKey`}
+        >
           <Input
             className="mt-1 mb-2"
             value={providersConfig[provider].apiKey}
@@ -80,7 +85,7 @@ export function ProviderConfigCard({ provider }: { provider: APIProviderNames })
               {i18n.t('options.apiProviders.apiKey.showAPIKey')}
             </label>
           </div>
-        </div>
+        </FieldWithLabel>
 
         <AdvancedProviderConfig provider={provider} />
       </div>
@@ -115,34 +120,45 @@ const ConnectionTestResultIconMap = {
   error: <ConnectionErrorIcon />,
 }
 
-function ConnectionTest({ provider }: { provider: APIProviderNames }) {
+function ConnectionTestButton({ provider }: { provider: APIProviderNames }) {
   const providersConfig = useAtomValue(configFields.providersConfig)
   const { apiKey, baseURL } = providersConfig[provider]
-  const apiConnection = useAPIConnection({ provider })
+
+  const mutation = useMutation({
+    mutationKey: ['apiConnection', provider],
+    mutationFn: async () => {
+      if (provider === 'deeplx') {
+        await deeplxTranslate('Hi', 'en', 'zh')
+      }
+      else {
+        const modelName = DEFAULT_TRANSLATE_MODELS[provider].model
+        await aiTranslate(provider, modelName, 'Hi')
+      }
+    },
+  })
 
   const handleTestConnection = () => {
-    apiConnection.testConnection()
+    mutation.mutate()
   }
 
   useEffect(() => {
-    apiConnection.reset()
+    mutation.reset()
   }, [apiKey, baseURL])
 
-  const testResult = apiConnection.isSuccess ? 'success' : apiConnection.isError ? 'error' : null
+  const testResult = mutation.isSuccess ? 'success' : mutation.isError ? 'error' : null
   const ConnectionTestResultIcon = testResult ? ConnectionTestResultIconMap[testResult] : null
 
   return (
     <div className="flex items-center gap-2">
       {ConnectionTestResultIcon}
-
       <Button
         size="sm"
         variant="outline"
         onClick={handleTestConnection}
-        disabled={apiConnection.isPending || !apiKey}
+        disabled={mutation.isPending || !apiKey}
         className="h-7 px-3"
       >
-        {apiConnection.isPending
+        {mutation.isPending
           ? (
               <div className="flex items-center gap-2">
                 <LoadingDots className="scale-75" />
