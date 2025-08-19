@@ -5,7 +5,7 @@ import { Button } from '@repo/ui/components/button'
 import { Checkbox } from '@repo/ui/components/checkbox'
 import { Input } from '@repo/ui/components/input'
 import { cn } from '@repo/ui/lib/utils'
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { useEffect, useState } from 'react'
 import LoadingDots from '@/components/loading-dots'
 import { useAPIConnection } from '@/hooks/api-connection'
@@ -116,7 +116,7 @@ const ConnectionTestResultIconMap = {
 }
 
 function ConnectionTest({ provider }: { provider: APIProviderNames }) {
-  const [providersConfig, _] = useAtom(configFields.providersConfig)
+  const providersConfig = useAtomValue(configFields.providersConfig)
   const { apiKey, baseURL } = providersConfig[provider]
   const apiConnection = useAPIConnection({ provider })
 
