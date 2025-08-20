@@ -20,7 +20,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import TranslationCard from './translation-card'
 
 interface TranslationGridProps {
@@ -92,17 +92,18 @@ export default function TranslationGrid({ results, services, onServiceToggle, on
   const resultsMap = new Map(results.map(result => [result.provider, result]))
 
   // Clean up collapsed state when services are removed
-  const cleanupCollapsedCards = useCallback(() => {
-    const enabledServiceIds = new Set(enabledServices.map(s => s.id))
+  useEffect(() => {
+    const currentEnabledServices = services.filter(s => s.enabled)
+    const enabledServiceIds = new Set(currentEnabledServices.map(s => s.id))
     setCollapsedCards((prev) => {
       const filteredIds = [...prev].filter(id => enabledServiceIds.has(id as any))
-      return new Set(filteredIds)
+      // Only update if there's a difference to avoid unnecessary re-renders
+      if (filteredIds.length !== prev.size) {
+        return new Set(filteredIds)
+      }
+      return prev
     })
-  }, [enabledServices])
-
-  useEffect(() => {
-    cleanupCollapsedCards()
-  }, [cleanupCollapsedCards])
+  }, [services])
 
   const sensors = useSensors(
     useSensor(PointerSensor),

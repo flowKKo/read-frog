@@ -6,6 +6,8 @@ interface LanguageInputProps {
   onChange: (value: string) => void
   onTranslate: () => void
   onClear: () => void
+  autoTranslate: boolean
+  onAutoTranslateChange: (enabled: boolean) => void
 }
 
 export default function LanguageInput({
@@ -13,6 +15,8 @@ export default function LanguageInput({
   onChange,
   onTranslate,
   onClear,
+  autoTranslate,
+  onAutoTranslateChange,
 }: LanguageInputProps) {
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
@@ -42,7 +46,19 @@ export default function LanguageInput({
         )}
       </div>
 
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-between">
+        {/* Auto-translate checkbox on the left */}
+        <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
+          <input
+            type="checkbox"
+            checked={autoTranslate}
+            onChange={e => onAutoTranslateChange(e.target.checked)}
+            className="w-4 h-4 text-primary border-2 border-border rounded focus:ring-2 focus:ring-ring"
+          />
+          <span>Auto-translate</span>
+        </label>
+
+        {/* Buttons on the right */}
         <div className="flex gap-2">
           <button
             type="button"

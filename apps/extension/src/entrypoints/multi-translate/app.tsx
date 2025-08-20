@@ -12,7 +12,7 @@ import { configFields } from '@/utils/atoms/config'
 import LanguageConfig from './components/language-config'
 import LanguageInput from './components/language-input'
 import TranslationGrid from './components/translation-grid'
-import { ALL_AVAILABLE_SERVICES, DEFAULT_SERVICES } from './components/translation-service-manager'
+import { DEFAULT_SERVICES } from './components/translation-service-manager'
 
 export default function App() {
   const [inputText, setInputText] = useState('')
@@ -31,72 +31,17 @@ export default function App() {
   // Translation services state
   const [translationServices, setTranslationServices] = useState<TranslationService[]>(DEFAULT_SERVICES)
 
-  const handleServiceToggle = useCallback((serviceId: TranslateProviderNames) => {
-    setTranslationServices((prev) => {
-      const serviceExists = prev.find(s => s.id === serviceId)
-
-      if (serviceExists) {
-        if (serviceExists.enabled) {
-          // Service is currently enabled, remove it from the array
-          clearProvider(serviceId)
-          return prev.filter(service => service.id !== serviceId)
-        }
-        else {
-          // Service exists but is disabled, remove it and add to the end as enabled
-          const newService = ALL_AVAILABLE_SERVICES.find(s => s.id === serviceId)
-          if (newService) {
-            const updated = [
-              ...prev.filter(service => service.id !== serviceId),
-              { ...newService, enabled: true },
-            ]
-
-            // Trigger translation for the newly enabled service
-            if (inputText.trim()) {
-              setTimeout(() => {
-                translateMultiple(inputText.trim(), {
-                  sourceLanguage,
-                  targetLanguage,
-                  providers: [serviceId] as any,
-                }).catch(() => {
-                  // Ignore errors for individual service translation
-                })
-              }, 100)
-            }
-
-            return updated
-          }
-        }
-      }
-      else {
-        // Add new service to the end of the list
-        const newService = ALL_AVAILABLE_SERVICES.find(s => s.id === serviceId)
-        if (newService) {
-          const updated = [...prev, { ...newService, enabled: true }]
-
-          // Trigger translation for the newly added service
-          if (inputText.trim()) {
-            setTimeout(() => {
-              translateMultiple(inputText.trim(), {
-                sourceLanguage,
-                targetLanguage,
-                providers: [serviceId] as any,
-              }).catch(() => {
-                // Ignore errors for individual service translation
-              })
-            }, 100)
-          }
-
-          return updated
-        }
-      }
-
-      return prev
-    })
-  }, [inputText, sourceLanguage, targetLanguage, translateMultiple, clearProvider])
+  // Auto-translate state (default enabled)
+  const [autoTranslate, setAutoTranslate] = useState(true)
 
   const handleServicesReorder = useCallback((reorderedServices: TranslationService[]) => {
     setTranslationServices(reorderedServices)
   }, [])
+
+  const handleServiceRemove = useCallback((serviceId: TranslateProviderNames) => {
+    setTranslationServices(prev => prev.filter(service => service.id !== serviceId))
+    clearProvider(serviceId)
+  }, [clearProvider])
 
   const handleInputChange = useCallback((newText: string) => {
     setInputText(newText)
@@ -105,7 +50,27 @@ export default function App() {
       // Immediately trigger detection for any text change (including single characters)
       detectLanguage(newText)
     }
-  }, [sourceLanguage, detectLanguage])
+
+    // Auto-translate if enabled and text is not empty
+    if (autoTranslate && newText.trim()) {
+      const enabledProviders = translationServices
+        .filter(service => service.enabled)
+        .map(service => service.id)
+
+      if (enabledProviders.length > 0) {
+        // Use setTimeout to debounce rapid typing
+        setTimeout(() => {
+          translateMultiple(newText.trim(), {
+            sourceLanguage,
+            targetLanguage,
+            providers: enabledProviders as any,
+          }).catch(() => {
+            // Ignore errors for auto-translation
+          })
+        }, 500) // 500ms debounce
+      }
+    }
+  }, [sourceLanguage, detectLanguage, autoTranslate, translationServices, targetLanguage, translateMultiple])
 
   const handleTranslate = useCallback(async () => {
     if (!inputText.trim()) {
@@ -198,7 +163,53 @@ export default function App() {
           detectedLanguage={detectedLanguage}
           isDetecting={isDetecting}
           services={translationServices}
-          onServicesChange={setTranslationServices}
+          onServicesChange={(newServices) => {
+            // When services change via the manager, we need to detect which service was toggled
+            const currentServiceIds = new Set(translationServices.map(s => s.id))
+            const newServiceIds = new Set(newServices.map(s => s.id))
+
+            // Find added services
+            const addedServices = newServices.filter(s => !currentServiceIds.has(s.id) && s.enabled)
+
+            // Find removed services
+            const removedServiceIds = translationServices.filter(s => !newServiceIds.has(s.id)).map(s => s.id)
+
+            // Find toggled services (existing services that changed enabled state)
+            const toggledServices = newServices.filter((newService) => {
+              const oldService = translationServices.find(s => s.id === newService.id)
+              return oldService && oldService.enabled !== newService.enabled
+            })
+
+            // Update the services state
+            setTranslationServices(newServices)
+
+            // Trigger auto-translation for newly enabled services if auto-translate is on
+            if (autoTranslate && inputText.trim()) {
+              const servicesToTranslate = [
+                ...addedServices.map(s => s.id),
+                ...toggledServices.filter(s => s.enabled).map(s => s.id),
+              ]
+
+              if (servicesToTranslate.length > 0) {
+                setTimeout(() => {
+                  // Get all currently enabled services to preserve existing results
+                  const allEnabledServices = newServices.filter(s => s.enabled).map(s => s.id)
+                  translateMultiple(inputText.trim(), {
+                    sourceLanguage,
+                    targetLanguage,
+                    providers: allEnabledServices as any,
+                  }).catch((error) => {
+                    console.error('❌ Translation failed for services:', servicesToTranslate, error)
+                  })
+                }, 200)
+              }
+            }
+
+            // Clear results for removed services
+            removedServiceIds.forEach((serviceId) => {
+              clearProvider(serviceId)
+            })
+          }}
         />
 
         {/* Main Content - Left/Right Split Layout */}
@@ -210,6 +221,8 @@ export default function App() {
               onChange={handleInputChange}
               onTranslate={handleTranslate}
               onClear={handleClear}
+              autoTranslate={autoTranslate}
+              onAutoTranslateChange={setAutoTranslate}
             />
           </div>
 
@@ -220,7 +233,7 @@ export default function App() {
                   <TranslationGrid
                     results={results}
                     services={translationServices}
-                    onServiceToggle={handleServiceToggle}
+                    onServiceToggle={handleServiceRemove}
                     onServicesReorder={handleServicesReorder}
                   />
                 )
