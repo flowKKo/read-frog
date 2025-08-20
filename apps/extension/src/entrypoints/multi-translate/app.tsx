@@ -12,7 +12,7 @@ import { configFields } from '@/utils/atoms/config'
 import LanguageConfig from './components/language-config'
 import LanguageInput from './components/language-input'
 import TranslationGrid from './components/translation-grid'
-import { DEFAULT_SERVICES } from './components/translation-service-manager'
+import { ALL_AVAILABLE_SERVICES, DEFAULT_SERVICES } from './components/translation-service-manager'
 
 export default function App() {
   const [inputText, setInputText] = useState('')
@@ -33,34 +33,64 @@ export default function App() {
 
   const handleServiceToggle = useCallback((serviceId: TranslateProviderNames) => {
     setTranslationServices((prev) => {
-      const updated = prev.map(service =>
-        service.id === serviceId
-          ? { ...service, enabled: !service.enabled }
-          : service,
-      )
+      const serviceExists = prev.find(s => s.id === serviceId)
 
-      // Check if a service was just enabled or disabled
-      const wasEnabled = prev.find(s => s.id === serviceId)?.enabled
-      const isNowEnabled = updated.find(s => s.id === serviceId)?.enabled
+      if (serviceExists) {
+        if (serviceExists.enabled) {
+          // Service is currently enabled, remove it from the array
+          clearProvider(serviceId)
+          return prev.filter(service => service.id !== serviceId)
+        }
+        else {
+          // Service exists but is disabled, remove it and add to the end as enabled
+          const newService = ALL_AVAILABLE_SERVICES.find(s => s.id === serviceId)
+          if (newService) {
+            const updated = [
+              ...prev.filter(service => service.id !== serviceId),
+              { ...newService, enabled: true },
+            ]
 
-      if (wasEnabled && !isNowEnabled) {
-        // Service was just disabled, clear its results
-        clearProvider(serviceId)
+            // Trigger translation for the newly enabled service
+            if (inputText.trim()) {
+              setTimeout(() => {
+                translateMultiple(inputText.trim(), {
+                  sourceLanguage,
+                  targetLanguage,
+                  providers: [serviceId] as any,
+                }).catch(() => {
+                  // Ignore errors for individual service translation
+                })
+              }, 100)
+            }
+
+            return updated
+          }
+        }
       }
-      else if (!wasEnabled && isNowEnabled && inputText.trim()) {
-        // Service was just enabled, trigger translation for just this service
-        setTimeout(() => {
-          translateMultiple(inputText.trim(), {
-            sourceLanguage,
-            targetLanguage,
-            providers: [serviceId] as any,
-          }).catch(() => {
-            // Ignore errors for individual service translation
-          })
-        }, 100)
+      else {
+        // Add new service to the end of the list
+        const newService = ALL_AVAILABLE_SERVICES.find(s => s.id === serviceId)
+        if (newService) {
+          const updated = [...prev, { ...newService, enabled: true }]
+
+          // Trigger translation for the newly added service
+          if (inputText.trim()) {
+            setTimeout(() => {
+              translateMultiple(inputText.trim(), {
+                sourceLanguage,
+                targetLanguage,
+                providers: [serviceId] as any,
+              }).catch(() => {
+                // Ignore errors for individual service translation
+              })
+            }, 100)
+          }
+
+          return updated
+        }
       }
 
-      return updated
+      return prev
     })
   }, [inputText, sourceLanguage, targetLanguage, translateMultiple, clearProvider])
 

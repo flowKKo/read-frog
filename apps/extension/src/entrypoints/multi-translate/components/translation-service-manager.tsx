@@ -16,14 +16,30 @@ interface TranslationServiceManagerProps {
   onChange: (services: TranslationService[]) => void
 }
 
-const DEFAULT_SERVICES: TranslationService[] = [
-  { id: 'google', name: 'Google Translate', icon: '', enabled: true },
-  { id: 'microsoft', name: 'Microsoft Translator', icon: '', enabled: true },
-  { id: 'deeplx', name: 'DeepLX', icon: '', enabled: true },
+// All available services with their default settings
+const ALL_AVAILABLE_SERVICES: TranslationService[] = [
+  { id: 'google', name: 'Google Translate', icon: '', enabled: false },
+  { id: 'microsoft', name: 'Microsoft Translator', icon: '', enabled: false },
+  { id: 'deeplx', name: 'DeepLX', icon: '', enabled: false },
   { id: 'openai', name: 'OpenAI', icon: '', enabled: false },
   { id: 'deepseek', name: 'DeepSeek', icon: '', enabled: false },
   { id: 'gemini', name: 'Gemini', icon: '', enabled: false },
 ]
+
+// Default services that are enabled by default (only the first few)
+const DEFAULT_SERVICES: TranslationService[] = [
+  { id: 'google', name: 'Google Translate', icon: '', enabled: true },
+  { id: 'microsoft', name: 'Microsoft Translator', icon: '', enabled: true },
+  { id: 'deeplx', name: 'DeepLX', icon: '', enabled: true },
+]
+
+// Service type categories
+const NORMAL_TRANSLATORS: TranslateProviderNames[] = ['google', 'microsoft', 'deeplx']
+const AI_TRANSLATORS: TranslateProviderNames[] = ['openai', 'deepseek', 'gemini']
+
+function getServiceDisplayName(serviceId: TranslateProviderNames): string {
+  return TRANSLATE_PROVIDER_ITEMS[serviceId]?.name || serviceId
+}
 
 export default function TranslationServiceManager({
   services,
@@ -32,15 +48,61 @@ export default function TranslationServiceManager({
   const [isOpen, setIsOpen] = useState(false)
 
   const handleToggleService = useCallback((serviceId: TranslateProviderNames) => {
-    const updatedServices = services.map(service =>
-      service.id === serviceId
-        ? { ...service, enabled: !service.enabled }
-        : service,
-    )
-    onChange(updatedServices)
+    const serviceExists = services.find(s => s.id === serviceId)
+
+    if (serviceExists) {
+      if (serviceExists.enabled) {
+        // Service is currently enabled, remove it from the array
+        const updatedServices = services.filter(service => service.id !== serviceId)
+        onChange(updatedServices)
+      }
+      else {
+        // Service exists but is disabled, remove it and add to the end as enabled
+        const newService = ALL_AVAILABLE_SERVICES.find(s => s.id === serviceId)
+        if (newService) {
+          const updatedServices = [
+            ...services.filter(service => service.id !== serviceId),
+            { ...newService, enabled: true },
+          ]
+          onChange(updatedServices)
+        }
+      }
+    }
+    else {
+      // Add new service to the end
+      const newService = ALL_AVAILABLE_SERVICES.find(s => s.id === serviceId)
+      if (newService) {
+        const updatedServices = [...services, { ...newService, enabled: true }]
+        onChange(updatedServices)
+      }
+    }
   }, [services, onChange])
 
   const enabledCount = services.filter(s => s.enabled).length
+
+  // Create services map for quick lookup
+  const servicesMap = new Map(services.map(service => [service.id, service]))
+
+  // Group services by type, using FIXED order for dropdown display
+  const normalServices = NORMAL_TRANSLATORS.map((serviceId) => {
+    const existingService = servicesMap.get(serviceId)
+    if (existingService) {
+      return existingService
+    }
+    // Return default service if not in current list
+    const defaultService = ALL_AVAILABLE_SERVICES.find(s => s.id === serviceId)
+    return defaultService ? { ...defaultService, enabled: false } : null
+  }).filter(Boolean) as TranslationService[]
+
+  const aiServices = AI_TRANSLATORS.map((serviceId) => {
+    const existingService = servicesMap.get(serviceId)
+    if (existingService) {
+      return existingService
+    }
+    // Return default service if not in current list
+    const defaultService = ALL_AVAILABLE_SERVICES.find(s => s.id === serviceId)
+    return defaultService ? { ...defaultService, enabled: false } : null
+  }).filter(Boolean) as TranslationService[]
 
   return (
     <div className="relative">
@@ -72,26 +134,67 @@ export default function TranslationServiceManager({
             </div>
 
             <div className="p-2">
-              {services.map(service => (
-                <label
-                  key={service.id}
-                  className="flex items-center gap-3 p-2 rounded hover:bg-accent cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={service.enabled}
-                    onChange={() => handleToggleService(service.id)}
-                    className="w-4 h-4 text-primary border-2 border-border rounded focus:ring-2 focus:ring-ring"
-                  />
-                  <ProviderIcon
-                    logo={TRANSLATE_PROVIDER_ITEMS[service.id]?.logo || ''}
-                    className="flex-shrink-0"
-                  />
-                  <span className="text-sm text-foreground flex-1">
-                    {TRANSLATE_PROVIDER_ITEMS[service.id]?.name || service.name}
-                  </span>
-                </label>
-              ))}
+              {/* Normal Translators Section */}
+              {normalServices.length > 0 && (
+                <>
+                  <div className="px-2 py-1 mb-1">
+                    <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                      Normal Translator
+                    </h4>
+                  </div>
+                  {normalServices.map(service => (
+                    <label
+                      key={service.id}
+                      className="flex items-center gap-3 p-2 rounded hover:bg-accent cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={service.enabled}
+                        onChange={() => handleToggleService(service.id)}
+                        className="w-4 h-4 text-primary border-2 border-border rounded focus:ring-2 focus:ring-ring"
+                      />
+                      <ProviderIcon
+                        logo={TRANSLATE_PROVIDER_ITEMS[service.id]?.logo || ''}
+                        className="flex-shrink-0"
+                      />
+                      <span className="text-sm text-foreground flex-1">
+                        {getServiceDisplayName(service.id)}
+                      </span>
+                    </label>
+                  ))}
+                </>
+              )}
+
+              {/* AI Translators Section */}
+              {aiServices.length > 0 && (
+                <>
+                  <div className="px-2 py-1 mb-1 mt-3">
+                    <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                      AI Translator
+                    </h4>
+                  </div>
+                  {aiServices.map(service => (
+                    <label
+                      key={service.id}
+                      className="flex items-center gap-3 p-2 rounded hover:bg-accent cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={service.enabled}
+                        onChange={() => handleToggleService(service.id)}
+                        className="w-4 h-4 text-primary border-2 border-border rounded focus:ring-2 focus:ring-ring"
+                      />
+                      <ProviderIcon
+                        logo={TRANSLATE_PROVIDER_ITEMS[service.id]?.logo || ''}
+                        className="flex-shrink-0"
+                      />
+                      <span className="text-sm text-foreground flex-1">
+                        {getServiceDisplayName(service.id)}
+                      </span>
+                    </label>
+                  ))}
+                </>
+              )}
             </div>
 
             <div className="p-3 border-t bg-muted">
@@ -99,6 +202,7 @@ export default function TranslationServiceManager({
                 {enabledCount}
                 {' '}
                 of
+                {' '}
                 {services.length}
                 {' '}
                 services enabled
@@ -117,4 +221,4 @@ export default function TranslationServiceManager({
   )
 }
 
-export { DEFAULT_SERVICES }
+export { ALL_AVAILABLE_SERVICES, DEFAULT_SERVICES }
