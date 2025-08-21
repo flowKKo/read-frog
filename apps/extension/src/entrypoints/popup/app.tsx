@@ -45,6 +45,7 @@ function App() {
         <SelectionToolbar />
         <QuickLinks />
       </div>
+
       <div className="flex items-center justify-between bg-neutral-200 px-2 py-1 dark:bg-neutral-800">
         <button
           type="button"
@@ -59,31 +60,56 @@ function App() {
         <span className="text-sm text-neutral-500 dark:text-neutral-400">
           {version}
         </span>
-        <GithubButton />
+        <div className="flex items-center gap-1">
+          <HelpButton />
+          <GithubButton />
+        </div>
       </div>
       <FrogToast />
     </>
   )
 }
 
-function GithubButton() {
+function IconButton({ icon, onClick, tooltipContent }: {
+  icon: string
+  onClick: () => void
+  tooltipContent: string
+}) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <button
           type="button"
           className="flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 hover:bg-neutral-300 dark:hover:bg-neutral-700"
-          onClick={() =>
-            window.open('https://github.com/mengxi-ream/read-frog', '_blank')}
+          onClick={onClick}
         >
-          <Icon icon="tabler:brand-github" className="size-4" strokeWidth={1.6} />
-          <span className="text-[13px] font-medium">Github</span>
+          <Icon icon={icon} className="size-4" strokeWidth={1.6} />
         </button>
       </TooltipTrigger>
       <TooltipContent className="max-w-[180px] break-words text-center">
-        {i18n.t('popup.github.description')}
+        {tooltipContent}
       </TooltipContent>
     </Tooltip>
+  )
+}
+
+function HelpButton() {
+  return (
+    <IconButton
+      icon="tabler:help-circle"
+      onClick={() => window.open('https://readfrog.app/tutorial/', '_blank')}
+      tooltipContent={i18n.t('popup.help.description')}
+    />
+  )
+}
+
+function GithubButton() {
+  return (
+    <IconButton
+      icon="tabler:brand-github"
+      onClick={() => window.open('https://github.com/mengxi-ream/read-frog', '_blank')}
+      tooltipContent={i18n.t('popup.github.description')}
+    />
   )
 }
 

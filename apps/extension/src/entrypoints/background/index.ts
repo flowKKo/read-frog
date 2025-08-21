@@ -37,6 +37,13 @@ export default defineBackground(() => {
     browser.runtime.openOptionsPage()
   })
 
+  onMessage('openTranslationHubPage', async () => {
+    await browser.tabs.create({
+      url: browser.runtime.getURL('/translation-hub.html'),
+      active: true,
+    })
+  })
+
   onMessage('popupRequestReadArticle', async (message) => {
     sendMessage('readArticle', undefined, message.data.tabId)
   })
