@@ -156,3 +156,43 @@ noAPIKeyConfig:
 translation:
   sameLanguage: 源语言和目标语言必须不同
   autoModeSameLanguage: 检测到的语言 '$1' 与目标语言相同
+translationHub:
+  title: 翻译中心
+  version: v
+  header:
+    title: 文本多译
+  language:
+    autoDetect: 自动检测
+    detecting: 检测中...
+    autoDetected: （自动检测）
+    swapLanguages: 交换语言
+    enterTextToDetect: 输入文本以检测语言
+    cannotSwapSame: 无法交换相同语言
+    sourceLanguage: 源语言
+    targetLanguage: 目标语言
+    searchLanguages: 搜索语言...
+    noLanguagesFound: 未找到语言
+  input:
+    placeholder: 输入要翻译的文本...
+    translate: 翻译
+    clear: 清空
+    quickTranslateHint: 使用 Ctrl/Cmd + Enter 快速翻译
+  services:
+    title: 翻译服务
+    configAPIKeys: 配置 API 密钥
+    needAPIKey: 需要 API 密钥
+    normalTranslator: 普通翻译器
+    aiTranslator: AI 翻译器
+    selectServices: 选择翻译服务开始使用
+  results:
+    expandContent: 展开内容
+    collapseContent: 折叠内容
+    copyTranslation: 复制翻译
+    hideService: 隐藏此服务
+    copied: 结果已复制！
+    unknownError: 发生未知错误
+    noResults: 暂无翻译结果
+  errors:
+    enterText: 请输入要翻译的文本
+    enableService: 请启用至少一个翻译服务
+    translationFailed: 翻译失败

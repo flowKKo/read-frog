@@ -8,3 +8,6 @@ export const isTranslatePopoverVisibleAtom = atom<boolean>(false)
 
 // 新增：存储鼠标点击位置
 export const mouseClickPositionAtom = atom<{ x: number, y: number } | null>(null)
+
+// 新增：管理多翻译结果的显示状态
+export const showMultiTranslateAtom = atom<boolean>(false)

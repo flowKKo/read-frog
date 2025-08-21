@@ -155,3 +155,43 @@ noAPIKeyConfig:
 translation:
   sameLanguage: 원본 언어와 대상 언어는 달라야 합니다
   autoModeSameLanguage: 감지된 언어 '$1'은(는) 대상 언어와 같습니다
+translationHub:
+  title: 번역 허브
+  version: v
+  header:
+    title: 텍스트 다중 번역
+  language:
+    autoDetect: 자동 감지
+    detecting: 감지 중...
+    autoDetected: (자동 감지)
+    swapLanguages: 언어 교체
+    enterTextToDetect: 언어를 감지하려면 텍스트를 입력하세요
+    cannotSwapSame: 같은 언어는 교체할 수 없습니다
+    sourceLanguage: 원본 언어
+    targetLanguage: 대상 언어
+    searchLanguages: 언어 검색...
+    noLanguagesFound: 언어를 찾을 수 없습니다
+  input:
+    placeholder: 번역할 텍스트를 입력하세요...
+    translate: 번역
+    clear: 지우기
+    quickTranslateHint: Ctrl/Cmd + Enter로 빠른 번역
+  services:
+    title: 번역 서비스
+    configAPIKeys: API 키 설정
+    needAPIKey: API 키 필요
+    normalTranslator: 일반 번역기
+    aiTranslator: AI 번역기
+    selectServices: 번역 서비스를 선택하여 시작하세요
+  results:
+    expandContent: 내용 펼치기
+    collapseContent: 내용 접기
+    copyTranslation: 번역 복사
+    hideService: 이 서비스 숨기기
+    copied: 결과가 복사되었습니다!
+    unknownError: 알 수 없는 오류가 발생했습니다
+    noResults: 아직 번역 결과가 없습니다
+  errors:
+    enterText: 번역할 텍스트를 입력해 주세요
+    enableService: 최소 하나의 번역 서비스를 활성화해 주세요
+    translationFailed: 번역에 실패했습니다

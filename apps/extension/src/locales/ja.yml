@@ -154,3 +154,43 @@ noAPIKeyConfig:
 translation:
   sameLanguage: ソース言語とターゲット言語は異なる必要があります
   autoModeSameLanguage: 検出された言語 '$1' はターゲット言語と同じです
+translationHub:
+  title: 翻訳ハブ
+  version: v
+  header:
+    title: テキスト多言語翻訳
+  language:
+    autoDetect: 自動検出
+    detecting: 検出中...
+    autoDetected: （自動検出）
+    swapLanguages: 言語を入れ替え
+    enterTextToDetect: テキストを入力して言語を検出
+    cannotSwapSame: 同じ言語は入れ替えできません
+    sourceLanguage: ソース言語
+    targetLanguage: ターゲット言語
+    searchLanguages: 言語を検索...
+    noLanguagesFound: 言語が見つかりません
+  input:
+    placeholder: 翻訳するテキストを入力...
+    translate: 翻訳
+    clear: クリア
+    quickTranslateHint: Ctrl/Cmd + Enter で素早く翻訳
+  services:
+    title: 翻訳サービス
+    configAPIKeys: APIキーを設定
+    needAPIKey: APIキーが必要
+    normalTranslator: 通常翻訳
+    aiTranslator: AI翻訳
+    selectServices: 翻訳サービスを選択して開始
+  results:
+    expandContent: コンテンツを展開
+    collapseContent: コンテンツを折りたたみ
+    copyTranslation: 翻訳をコピー
+    hideService: このサービスを非表示
+    copied: 結果をコピーしました！
+    unknownError: 不明なエラーが発生しました
+    noResults: 翻訳結果がまだありません
+  errors:
+    enterText: 翻訳するテキストを入力してください
+    enableService: 少なくとも1つの翻訳サービスを有効にしてください
+    translationFailed: 翻訳に失敗しました

@@ -152,6 +152,46 @@ noAPIKeyConfig:
     firstOnThe: first on the
     optionsPage: options
     page: page
+translationHub:
+  title: Translation Hub
+  version: v
+  header:
+    title: Text Multi-translate
+  language:
+    autoDetect: Auto Detect
+    detecting: Detecting...
+    autoDetected: (Auto detected)
+    swapLanguages: Swap languages
+    enterTextToDetect: Enter text to detect language
+    cannotSwapSame: Cannot swap same languages
+    sourceLanguage: Source language
+    targetLanguage: Target language
+    searchLanguages: Search languages...
+    noLanguagesFound: No languages found
+  input:
+    placeholder: Enter text to translate...
+    translate: Translate
+    clear: Clear
+    quickTranslateHint: Use Ctrl/Cmd + Enter to translate quickly
+  services:
+    title: Translation Services
+    configAPIKeys: Config API Keys
+    needAPIKey: Need API Key
+    normalTranslator: Normal Translator
+    aiTranslator: AI Translator
+    selectServices: Select translation services to get started
+  results:
+    expandContent: Expand content
+    collapseContent: Collapse content
+    copyTranslation: Copy translation
+    hideService: Hide this service
+    copied: result copied!
+    unknownError: Unknown error occurred
+    noResults: No translation results yet
+  errors:
+    enterText: Please enter text to translate
+    enableService: Please enable at least one translation service
+    translationFailed: Translation failed
 translation:
   sameLanguage: Source and target languages must be different
   autoModeSameLanguage: Detected language '$1' is the same as target language
