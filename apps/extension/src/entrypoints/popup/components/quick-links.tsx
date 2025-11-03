@@ -1,18 +1,18 @@
-import { i18n } from '#imports'
+import { browser, i18n } from '#imports'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@repo/ui/components/tooltip'
 import bookIcon from '@/assets/icons/book.svg'
 import discordIcon from '@/assets/icons/discord.svg'
-import helpIcon from '@/assets/icons/help.svg'
+import hubIcon from '@/assets/icons/hub.svg'
 
 const LINKS: {
-  label: 'help' | 'book' | 'discord'
+  label: 'hub' | 'discord' | 'book'
   icon: string
   url: string
 }[] = [
   {
-    label: 'book',
-    icon: bookIcon,
-    url: 'https://www.neat-reader.com/webapp#/',
+    label: 'hub',
+    icon: hubIcon,
+    url: browser.runtime.getURL('/translation-hub.html'),
   },
   {
     label: 'discord',
@@ -20,9 +20,9 @@ const LINKS: {
     url: 'https://discord.gg/ej45e3PezJ',
   },
   {
-    label: 'help',
-    icon: helpIcon,
-    url: 'https://readfrog.app/tutorial/',
+    label: 'book',
+    icon: bookIcon,
+    url: 'https://www.neat-reader.com/webapp#/',
   },
 ]
 

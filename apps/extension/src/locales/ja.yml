@@ -14,6 +14,9 @@ popup:
   options: オプション
   hover: ホバー
   translateParagraph: 段落を翻訳
+  hub:
+    title: ハブ
+    description: 高度な翻訳ツールにアクセス
   help:
     title: ヘルプ
     description: より多くのヒントとトリックを発見します

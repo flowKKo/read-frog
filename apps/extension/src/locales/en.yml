@@ -15,6 +15,9 @@ popup:
   options: Options
   hover: Hover
   translateParagraph: to translate paragraph
+  hub:
+    title: Hub
+    description: Access the Translation Hub for advanced translation tools
   help:
     title: Help
     description: Discover more tips and tricks

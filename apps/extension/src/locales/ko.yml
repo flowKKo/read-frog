@@ -14,6 +14,9 @@ popup:
   options: 옵션
   hover: 마우스 오버
   translateParagraph: 단락 번역
+  hub:
+    title: 허브
+    description: 고급 번역 도구에 액세스
   help:
     title: 도움말
     description: 더 많은 팁과 트릭 발견하기

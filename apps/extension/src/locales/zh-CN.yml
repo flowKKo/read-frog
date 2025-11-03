@@ -15,6 +15,9 @@ popup:
   options: 选项
   hover: 鼠标悬停
   translateParagraph: 来翻译段落
+  hub:
+    title: 中心
+    description: 访问翻译中心以获取高级翻译工具
   help:
     title: 帮助
     description: 发现更多提示和技巧
