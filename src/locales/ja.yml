@@ -17,6 +17,8 @@ popup:
   options: オプション
   hover: ホバー
   translateParagraph: 段落を翻訳
+  hub:
+    tooltip: 翻訳ハブでマルチAPIテキスト翻訳などのより多くの翻訳機能をお試しください
   discord:
     tooltip: Discordに参加して開発者とつながり、新機能を先行体験しましょう
   blog:

@@ -18,6 +18,8 @@ popup:
   options: Options
   hover: Hover
   translateParagraph: to translate paragraph
+  hub:
+    tooltip: Try more translation features in Translation Hub like multi-API text translation
   discord:
     tooltip: Join Discord to connect with developers and get early access to new features
   blog:

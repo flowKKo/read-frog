@@ -18,6 +18,8 @@ popup:
   options: 選項
   hover: 滑鼠懸停
   translateParagraph: 來翻譯段落
+  hub:
+    tooltip: 在翻譯中心嘗試更多翻譯功能，如多API文本翻譯
   discord:
     tooltip: 加入 Discord 與開發者交流，搶先體驗新功能
   blog:

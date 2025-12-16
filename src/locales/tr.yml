@@ -18,6 +18,8 @@ popup:
   options: Seçenekler
   hover: Üzerine Gel
   translateParagraph: paragrafı çevirmek için
+  hub:
+    tooltip: Çeviri Hub'ında multi-API metin çevirisi gibi daha fazla çeviri özelliğini deneyin
   discord:
     tooltip: Geliştiricilerle bağlantı kurmak ve yeni özelliklere erken erişim sağlamak için Discord'a katılın
   blog:

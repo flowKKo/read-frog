@@ -10,6 +10,7 @@ import { AISmartContext } from './components/ai-smart-context'
 import { AlwaysTranslate } from './components/always-translate'
 import BlogNotification from './components/blog-notification'
 import { DiscordButton } from './components/discord-button'
+import { HubButton } from './components/hub-button'
 import LanguageOptionsSelector from './components/language-options-selector'
 import { MoreMenu } from './components/more-menu'
 import Hotkey from './components/node-translation-hotkey-selector'
@@ -33,6 +34,7 @@ function App() {
         <div className="flex items-center justify-between">
           <UserAccount />
           <div className="flex items-center">
+            <HubButton />
             <DiscordButton />
             <BlogNotification />
           </div>

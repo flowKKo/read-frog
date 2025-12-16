@@ -18,6 +18,8 @@ popup:
   options: Tùy chọn
   hover: Di chuột
   translateParagraph: để dịch đoạn văn
+  hub:
+    tooltip: Thử nhiều tính năng dịch thuật hơn trong Trung tâm Dịch thuật như dịch văn bản đa-API
   discord:
     tooltip: Tham gia Discord để kết nối với các nhà phát triển và truy cập sớm các tính năng mới
   blog:
