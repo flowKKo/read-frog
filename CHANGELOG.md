@@ -1,5 +1,11 @@
 # @read-frog/extension
 
+## 1.20.7
+
+### Patch Changes
+
+- [#815](https://github.com/mengxi-ream/read-frog/pull/815) [`282a852`](https://github.com/mengxi-ream/read-frog/commit/282a8521e6225d3fd1f547093e0345b4e93c607c) Thanks [@mengxi-ream](https://github.com/mengxi-ream)! - fix: treat last synced config as null if it is invalid to unlock sync flow
+
 ## 1.20.6
 
 ### Patch Changes
