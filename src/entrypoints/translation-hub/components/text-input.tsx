@@ -51,8 +51,8 @@ export function TextInput({
   }
 
   return (
-    <div className="relative">
-      <div className={`relative border rounded-lg ${isFocused ? 'ring-1 ring-primary/30 border-primary/50' : 'border-border hover:border-border/80'}`}>
+    <div className="relative bg-background rounded-xl">
+      <div className={`relative border rounded-xl ${isFocused ? 'ring-1 ring-primary/30 border-primary/50' : 'border-border hover:border-border/80'}`}>
         <textarea
           value={value}
           onChange={e => onChange(e.target.value)}
@@ -60,7 +60,7 @@ export function TextInput({
           onBlur={() => setIsFocused(false)}
           placeholder={placeholder}
           disabled={disabled}
-          className="w-full h-96 px-4 py-3 bg-transparent resize-none focus:outline-none placeholder:text-muted-foreground"
+          className="w-full h-96 px-4 py-3 text-base bg-transparent resize-none focus:outline-none placeholder:text-muted-foreground"
           style={{ userSelect: 'text' }}
         />
 

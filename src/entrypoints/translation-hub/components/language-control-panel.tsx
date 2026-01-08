@@ -19,14 +19,14 @@ export function LanguageControlPanel({
   onLanguageExchange,
 }: LanguageControlPanelProps) {
   return (
-    <div className="flex items-end gap-3">
+    <div className="flex items-center gap-3">
       <SearchableLanguageSelector
         value={sourceLanguage}
         onValueChange={onSourceLanguageChange}
         label="Source Language"
       />
 
-      <div className="shrink-0 pb-2">
+      <div className="shrink-0 mt-6">
         <Button
           variant="ghost"
           size="icon"

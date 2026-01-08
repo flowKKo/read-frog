@@ -98,7 +98,7 @@ function TranslationCard({ result, onCopy, onDelete, onServiceRemove }: Translat
                   </div>
                 )
               : (
-                  <div className="text-sm leading-relaxed whitespace-pre-wrap">
+                  <div className="text-base leading-relaxed whitespace-pre-wrap">
                     {result.text}
                   </div>
                 )}
@@ -156,26 +156,16 @@ export function TranslationPanel({ results, selectedServices, onCopy, onDeleteCa
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-muted-foreground">
-          Translation Services (
-          {selectedServices.length}
-          )
-        </h3>
-      </div>
-
-      <div className="space-y-3">
-        {serviceCards.map(result => (
-          <TranslationCard
-            key={result.id}
-            result={result}
-            onCopy={onCopy}
-            onDelete={onDeleteCard}
-            onServiceRemove={onServiceRemove}
-          />
-        ))}
-      </div>
+    <div className="space-y-3">
+      {serviceCards.map(result => (
+        <TranslationCard
+          key={result.id}
+          result={result}
+          onCopy={onCopy}
+          onDelete={onDeleteCard}
+          onServiceRemove={onServiceRemove}
+        />
+      ))}
     </div>
   )
 }

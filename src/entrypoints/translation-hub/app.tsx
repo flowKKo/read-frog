@@ -177,58 +177,48 @@ export default function App() {
   }, [])
 
   return (
-    <div className="bg-background min-h-screen">
-      <main className="flex-1 flex">
-        <div className="flex flex-col lg:flex-row w-full">
-          {/* Left Side - Language Settings & Text Input */}
-          <div className="w-full lg:w-1/2 min-w-0 p-6 space-y-6">
-            {/* Language Settings */}
-            <div>
-              <LanguageControlPanel
-                sourceLanguage={sourceLanguage}
-                targetLanguage={targetLanguage}
-                onSourceLanguageChange={setSourceLanguage}
-                onTargetLanguageChange={setTargetLanguage}
-                onLanguageExchange={handleLanguageExchange}
-              />
-            </div>
+    <div className="bg-muted/30 min-h-screen">
+      <div className="max-w-6xl mx-auto">
+        <header className="px-6 py-3">
+          <h1 className="text-3xl font-semibold text-foreground">
+            Multi-API Text Translation
+          </h1>
+        </header>
 
-            {/* Text Input */}
-            <div>
-              <TextInput
-                value={inputText}
-                onChange={handleInputChange}
-                onTranslate={handleTranslate}
-                disabled={selectedServices.length === 0}
-                isTranslating={isTranslating}
-                placeholder="Enter the text you want to translate..."
-              />
-            </div>
+        <main className="px-6 pb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-3">
+            {/* Row 1: Controls */}
+            <LanguageControlPanel
+              sourceLanguage={sourceLanguage}
+              targetLanguage={targetLanguage}
+              onSourceLanguageChange={setSourceLanguage}
+              onTargetLanguageChange={setTargetLanguage}
+              onLanguageExchange={handleLanguageExchange}
+            />
+            <TranslationServiceDropdown
+              selectedServices={selectedServices}
+              onServicesChange={setSelectedServices}
+            />
+
+            {/* Row 2: Content - aligned at same height */}
+            <TextInput
+              value={inputText}
+              onChange={handleInputChange}
+              onTranslate={handleTranslate}
+              disabled={selectedServices.length === 0}
+              isTranslating={isTranslating}
+              placeholder="Enter the text you want to translate..."
+            />
+            <TranslationPanel
+              results={translationResults}
+              selectedServices={selectedServices}
+              onCopy={handleCopyText}
+              onDeleteCard={handleDeleteCard}
+              onServiceRemove={handleServiceRemove}
+            />
           </div>
-
-          {/* Right Side - Service Control & Results */}
-          <div className="w-full lg:w-1/2 min-w-0 p-6 space-y-6">
-            {/* Translation Service Control */}
-            <div>
-              <TranslationServiceDropdown
-                selectedServices={selectedServices}
-                onServicesChange={setSelectedServices}
-              />
-            </div>
-
-            {/* Translation Results */}
-            <div>
-              <TranslationPanel
-                results={translationResults}
-                selectedServices={selectedServices}
-                onCopy={handleCopyText}
-                onDeleteCard={handleDeleteCard}
-                onServiceRemove={handleServiceRemove}
-              />
-            </div>
-          </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   )
 }

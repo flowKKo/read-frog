@@ -130,7 +130,7 @@ export function TranslationServiceDropdown({
   }
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-end gap-3">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="justify-between min-w-64">
