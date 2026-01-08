@@ -30,9 +30,9 @@ export default function App() {
 
     const filteredProvidersConfig = filterEnabledProvidersConfig(providersConfig)
     return [
-      ...getLLMTranslateProvidersConfig(filteredProvidersConfig),
       ...getNonAPIProvidersConfig(filteredProvidersConfig),
       ...getPureAPIProvidersConfig(filteredProvidersConfig),
+      ...getLLMTranslateProvidersConfig(filteredProvidersConfig),
     ].filter(p => p && p.id && p.name && p.provider).map(({ id, name, provider }) => ({
       id,
       name,
@@ -156,6 +156,13 @@ export default function App() {
     prevLanguagesRef.current = { sourceLanguage, targetLanguage }
   }, [sourceLanguage, targetLanguage, inputText, selectedServices, isTranslating, handleTranslate])
 
+  const handleInputChange = useCallback((value: string) => {
+    setInputText(value)
+    if (!value.trim()) {
+      setTranslationResults([])
+    }
+  }, [])
+
   const handleCopyText = useCallback((text: string) => {
     void navigator.clipboard.writeText(text)
     // TODO: Add toast notification
@@ -171,19 +178,10 @@ export default function App() {
 
   return (
     <div className="bg-background min-h-screen">
-      <header className="border-b px-6 py-4">
-        <h1 className="text-2xl font-semibold text-foreground">
-          Translation Hub
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Try multiple translation services simultaneously
-        </p>
-      </header>
-
       <main className="flex-1 flex">
-        <div className="flex w-full">
+        <div className="flex flex-col lg:flex-row w-full">
           {/* Left Side - Language Settings & Text Input */}
-          <div className="w-1/2 p-6 space-y-6">
+          <div className="w-full lg:w-1/2 min-w-0 p-6 space-y-6">
             {/* Language Settings */}
             <div>
               <LanguageControlPanel
@@ -199,7 +197,7 @@ export default function App() {
             <div>
               <TextInput
                 value={inputText}
-                onChange={setInputText}
+                onChange={handleInputChange}
                 onTranslate={handleTranslate}
                 disabled={selectedServices.length === 0}
                 isTranslating={isTranslating}
@@ -209,7 +207,7 @@ export default function App() {
           </div>
 
           {/* Right Side - Service Control & Results */}
-          <div className="w-1/2 p-6 space-y-6 border-l">
+          <div className="w-full lg:w-1/2 min-w-0 p-6 space-y-6">
             {/* Translation Service Control */}
             <div>
               <TranslationServiceDropdown

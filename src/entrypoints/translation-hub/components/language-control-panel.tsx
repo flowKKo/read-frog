@@ -28,10 +28,9 @@ export function LanguageControlPanel({
 
       <div className="shrink-0 pb-2">
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
           onClick={onLanguageExchange}
-          className="rounded-full"
           title="Exchange languages"
         >
           <Icon icon="tabler:arrows-exchange" className="h-4 w-4" />

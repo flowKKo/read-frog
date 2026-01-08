@@ -29,9 +29,11 @@ function TranslationCard({ result, onCopy, onDelete, onServiceRemove }: Translat
     }
   }
 
+  const hasContent = result.isLoading || result.error || result.text
+
   return (
     <div className="border rounded-lg bg-card">
-      <div className="flex items-center justify-between px-3 py-2 border-b">
+      <div className={`flex items-center justify-between px-3 py-2 ${hasContent ? 'border-b' : ''}`}>
         <div className="flex items-center space-x-2">
           {result.provider && PROVIDER_ITEMS[result.provider as keyof typeof PROVIDER_ITEMS]
             ? (
@@ -74,38 +76,34 @@ function TranslationCard({ result, onCopy, onDelete, onServiceRemove }: Translat
         </div>
       </div>
 
-      <div className="p-3">
-        {result.isLoading
-          ? (
-              <div className="flex items-center justify-center py-4">
-                <div className="flex items-center space-x-2 text-muted-foreground">
-                  <Icon icon="tabler:loader" className="h-4 w-4 animate-spin" />
-                  <span className="text-sm">Translating...</span>
-                </div>
-              </div>
-            )
-          : result.error
+      {hasContent && (
+        <div className="p-3">
+          {result.isLoading
             ? (
-                <div className="py-2">
-                  <div className="flex items-center space-x-2 text-destructive mb-1">
-                    <Icon icon="tabler:alert-circle" className="h-4 w-4" />
-                    <span className="text-sm font-medium">Translation Failed</span>
+                <div className="flex items-center justify-center py-4">
+                  <div className="flex items-center space-x-2 text-muted-foreground">
+                    <Icon icon="tabler:loader" className="h-4 w-4 animate-spin" />
+                    <span className="text-sm">Translating...</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">{result.error}</p>
                 </div>
               )
-            : result.text
+            : result.error
               ? (
-                  <div className="text-sm leading-relaxed whitespace-pre-wrap">
-                    {result.text}
+                  <div className="py-2">
+                    <div className="flex items-center space-x-2 text-destructive mb-1">
+                      <Icon icon="tabler:alert-circle" className="h-4 w-4" />
+                      <span className="text-sm font-medium">Translation Failed</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{result.error}</p>
                   </div>
                 )
               : (
-                  <div className="py-2 text-center text-muted-foreground">
-                    <p className="text-sm">Waiting for translation...</p>
+                  <div className="text-sm leading-relaxed whitespace-pre-wrap">
+                    {result.text}
                   </div>
                 )}
-      </div>
+        </div>
+      )}
     </div>
   )
 }

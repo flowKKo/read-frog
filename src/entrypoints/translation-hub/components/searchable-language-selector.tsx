@@ -2,7 +2,6 @@ import type { LangCodeISO6393 } from '@read-frog/definitions'
 import { Icon } from '@iconify/react'
 import {
   LANG_CODE_TO_EN_NAME,
-  LANG_CODE_TO_LOCALE_NAME,
   langCodeISO6393Schema,
 } from '@read-frog/definitions'
 import { useEffect, useRef, useState } from 'react'
@@ -14,7 +13,7 @@ interface SearchableLanguageSelectorProps {
 }
 
 function langCodeLabel(langCode: LangCodeISO6393) {
-  return `${LANG_CODE_TO_EN_NAME[langCode]} (${LANG_CODE_TO_LOCALE_NAME[langCode]})`
+  return LANG_CODE_TO_EN_NAME[langCode]
 }
 
 function highlightSearchText(text: string, search: string) {
@@ -53,13 +52,9 @@ export function SearchableLanguageSelector({
 
     // Get all possible names for this language
     const enName = LANG_CODE_TO_EN_NAME[langCode]?.toLowerCase() || ''
-    const localeName = LANG_CODE_TO_LOCALE_NAME[langCode]?.toLowerCase() || ''
-    const fullLabel = langCodeLabel(langCode).toLowerCase()
 
     // Check if any part matches the search
-    return fullLabel.includes(searchLower)
-      || enName.includes(searchLower)
-      || localeName.includes(searchLower)
+    return enName.includes(searchLower)
       || langCode.toLowerCase().includes(searchLower)
   })
 
@@ -116,7 +111,7 @@ export function SearchableLanguageSelector({
 
   return (
     <div className="flex-1 relative" ref={dropdownRef}>
-      <label className="block text-sm font-medium text-muted-foreground mb-2">
+      <label className="block text-sm font-medium text-muted-foreground mb-2 whitespace-nowrap">
         {label}
       </label>
 
@@ -156,8 +151,8 @@ export function SearchableLanguageSelector({
               )
             : (
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">{langCodeLabel(value)}</span>
-                  <Icon icon="tabler:chevron-down" className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm truncate">{langCodeLabel(value)}</span>
+                  <Icon icon="tabler:chevron-down" className="h-4 w-4 text-muted-foreground shrink-0" />
                 </div>
               )}
         </div>

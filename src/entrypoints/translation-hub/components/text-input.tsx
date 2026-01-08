@@ -60,7 +60,7 @@ export function TextInput({
           onBlur={() => setIsFocused(false)}
           placeholder={placeholder}
           disabled={disabled}
-          className="w-full h-80 px-4 py-3 bg-transparent resize-none focus:outline-none placeholder:text-muted-foreground"
+          className="w-full h-96 px-4 py-3 bg-transparent resize-none focus:outline-none placeholder:text-muted-foreground"
           style={{ userSelect: 'text' }}
         />
 
