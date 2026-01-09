@@ -1,27 +1,26 @@
-import type { SelectedService } from '../types'
+import type { ServiceInfo } from '../types'
 import type { Theme } from '@/components/providers/theme-provider'
 import ProviderIcon from '@/components/provider-icon'
 import { Checkbox } from '@/components/shadcn/checkbox'
 import { PROVIDER_ITEMS } from '@/utils/constants/providers'
 
 interface ServiceListItemProps {
-  service: SelectedService
+  service: ServiceInfo
+  isSelected: boolean
   theme: Theme
   onToggle: (id: string, enabled: boolean) => void
 }
 
-export function ServiceListItem({ service, theme, onToggle }: ServiceListItemProps) {
-  const providerItem = service.provider
-    ? PROVIDER_ITEMS[service.provider as keyof typeof PROVIDER_ITEMS]
-    : null
+export function ServiceListItem({ service, isSelected, theme, onToggle }: ServiceListItemProps) {
+  const providerItem = PROVIDER_ITEMS[service.provider as keyof typeof PROVIDER_ITEMS]
 
   return (
     <div
       className="flex items-center space-x-2 p-2 rounded hover:bg-primary/5 cursor-pointer"
-      onClick={() => onToggle(service.id, !service.enabled)}
+      onClick={() => onToggle(service.id, !isSelected)}
     >
       <Checkbox
-        checked={service.enabled || false}
+        checked={isSelected}
         onCheckedChange={checked => onToggle(service.id, !!checked)}
         onClick={e => e.stopPropagation()}
       />
@@ -49,12 +48,13 @@ export function ServiceListItem({ service, theme, onToggle }: ServiceListItemPro
 
 interface ServiceSectionProps {
   title: string
-  services: SelectedService[]
+  services: ServiceInfo[]
+  selectedIds: Set<string>
   theme: Theme
   onToggle: (id: string, enabled: boolean) => void
 }
 
-export function ServiceSection({ title, services, theme, onToggle }: ServiceSectionProps) {
+export function ServiceSection({ title, services, selectedIds, theme, onToggle }: ServiceSectionProps) {
   if (services.length === 0) {
     return null
   }
@@ -69,6 +69,7 @@ export function ServiceSection({ title, services, theme, onToggle }: ServiceSect
           <ServiceListItem
             key={service.id}
             service={service}
+            isSelected={selectedIds.has(service.id)}
             theme={theme}
             onToggle={onToggle}
           />

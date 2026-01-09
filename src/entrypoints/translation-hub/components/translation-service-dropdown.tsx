@@ -1,6 +1,7 @@
-import type { SelectedService } from '../types'
+import type { ServiceInfo } from '../types'
 import { browser } from '#imports'
 import { Icon } from '@iconify/react'
+import { useMemo } from 'react'
 import { useTheme } from '@/components/providers/theme-provider'
 import { Button } from '@/components/shadcn/button'
 import {
@@ -11,30 +12,30 @@ import {
 import { useAvailableServices } from '../hooks/use-available-services'
 import { ServiceSection } from './service-list-item'
 
-const DEFAULT_SELECTED_SERVICES: SelectedService[] = []
-
 interface TranslationServiceDropdownProps {
-  selectedServices?: SelectedService[]
-  onServicesChange: (services: SelectedService[]) => void
+  selectedServices: ServiceInfo[]
+  onServicesChange: (services: ServiceInfo[]) => void
 }
 
 export function TranslationServiceDropdown({
-  selectedServices = DEFAULT_SELECTED_SERVICES,
+  selectedServices,
   onServicesChange,
 }: TranslationServiceDropdownProps) {
   const { theme = 'light' } = useTheme()
-  const { services: availableServices, error: hasError } = useAvailableServices({
-    withType: true,
-    selectedServices,
-  })
+  const { services: availableServices, error: hasError } = useAvailableServices()
+
+  const selectedIds = useMemo(() => new Set(selectedServices.map(s => s.id)), [selectedServices])
 
   const handleServiceToggle = (serviceId: string, enabled: boolean) => {
-    const updatedServices = availableServices.map(service =>
-      service.id === serviceId
-        ? { ...service, enabled }
-        : service,
-    )
-    onServicesChange(updatedServices.filter(service => service.enabled))
+    if (enabled) {
+      const service = availableServices.find(s => s.id === serviceId)
+      if (service) {
+        onServicesChange([...selectedServices, service])
+      }
+    }
+    else {
+      onServicesChange(selectedServices.filter(s => s.id !== serviceId))
+    }
   }
 
   const handleConfigureAPI = async () => {
@@ -48,7 +49,7 @@ export function TranslationServiceDropdown({
     }
   }
 
-  const enabledCount = selectedServices?.length || 0
+  const enabledCount = selectedServices.length
   const normalServices = availableServices.filter(s => s.type === 'normal')
   const aiServices = availableServices.filter(s => s.type === 'ai')
 
@@ -100,12 +101,14 @@ export function TranslationServiceDropdown({
                       <ServiceSection
                         title="Normal Translator"
                         services={normalServices}
+                        selectedIds={selectedIds}
                         theme={theme}
                         onToggle={handleServiceToggle}
                       />
                       <ServiceSection
                         title="AI Translator"
                         services={aiServices}
+                        selectedIds={selectedIds}
                         theme={theme}
                         onToggle={handleServiceToggle}
                       />

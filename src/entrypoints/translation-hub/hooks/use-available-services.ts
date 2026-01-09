@@ -1,4 +1,4 @@
-import type { SelectedService } from '../types'
+import type { ServiceInfo } from '../types'
 import { useAtomValue } from 'jotai'
 import { useMemo } from 'react'
 import { configFieldsAtomMap } from '@/utils/atoms/config'
@@ -9,22 +9,12 @@ import {
   getPureAPIProvidersConfig,
 } from '@/utils/config/helpers'
 
-interface UseAvailableServicesOptions {
-  /** Include type field ('normal' | 'ai') for categorization */
-  withType?: boolean
-  /** Selected services to derive enabled state from. If not provided, all services default to enabled=true */
-  selectedServices?: SelectedService[]
-}
-
 interface UseAvailableServicesResult {
-  services: SelectedService[]
+  services: ServiceInfo[]
   error: boolean
 }
 
-export function useAvailableServices(
-  options: UseAvailableServicesOptions = {},
-): UseAvailableServicesResult {
-  const { withType = false, selectedServices } = options
+export function useAvailableServices(): UseAvailableServicesResult {
   const providersConfig = useAtomValue(configFieldsAtomMap.providersConfig)
 
   return useMemo(() => {
@@ -33,45 +23,34 @@ export function useAvailableServices(
         return { services: [], error: false }
       }
 
-      const filteredProvidersConfig = filterEnabledProvidersConfig(providersConfig)
+      const filtered = filterEnabledProvidersConfig(providersConfig)
 
-      const llmProviders = (getLLMTranslateProvidersConfig(filteredProvidersConfig) || [])
-        .filter(p => p?.id && p?.name && p?.provider)
+      const mapToService = (p: { id: string, name: string, provider: string }, type: 'normal' | 'ai'): ServiceInfo => ({
+        id: p.id,
+        name: p.name,
+        provider: p.provider,
+        type,
+      })
 
       const normalProviders = [
-        ...(getNonAPIProvidersConfig(filteredProvidersConfig) || []),
-        ...(getPureAPIProvidersConfig(filteredProvidersConfig) || []),
+        ...(getNonAPIProvidersConfig(filtered) || []),
+        ...(getPureAPIProvidersConfig(filtered) || []),
       ].filter(p => p?.id && p?.name && p?.provider)
 
-      const mapProvider = (p: { id: string, name: string, provider: string }, type: 'normal' | 'ai') => {
-        const enabled = selectedServices
-          ? selectedServices.some(s => s.id === p.id && s.enabled)
-          : true
+      const llmProviders = (getLLMTranslateProvidersConfig(filtered) || [])
+        .filter(p => p?.id && p?.name && p?.provider)
 
-        const service: SelectedService = {
-          id: p.id,
-          name: p.name,
-          provider: p.provider,
-          enabled,
-        }
-
-        if (withType) {
-          service.type = type
-        }
-
-        return service
+      return {
+        services: [
+          ...normalProviders.map(p => mapToService(p, 'normal')),
+          ...llmProviders.map(p => mapToService(p, 'ai')),
+        ],
+        error: false,
       }
-
-      const services = [
-        ...normalProviders.map(p => mapProvider(p, 'normal')),
-        ...llmProviders.map(p => mapProvider(p, 'ai')),
-      ]
-
-      return { services, error: false }
     }
     catch (error) {
       console.error('Error loading translation services:', error)
       return { services: [], error: true }
     }
-  }, [providersConfig, selectedServices, withType])
+  }, [providersConfig])
 }

@@ -7,7 +7,6 @@ interface TextInputProps {
   onTranslate: () => void
   placeholder?: string
   disabled?: boolean
-  isTranslating?: boolean
 }
 
 export function TextInput({
@@ -16,7 +15,6 @@ export function TextInput({
   onTranslate,
   placeholder = 'Enter text to translate...',
   disabled = false,
-  isTranslating: _isTranslating = false,
 }: TextInputProps) {
   const [isFocused, setIsFocused] = useState(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)

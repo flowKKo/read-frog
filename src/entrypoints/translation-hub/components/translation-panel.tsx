@@ -1,4 +1,4 @@
-import type { SelectedService, TranslationResult } from '../types'
+import type { ServiceInfo, TranslationResult } from '../types'
 import { Icon } from '@iconify/react'
 import ProviderIcon from '@/components/provider-icon'
 import { useTheme } from '@/components/providers/theme-provider'
@@ -8,11 +8,10 @@ import { PROVIDER_ITEMS } from '@/utils/constants/providers'
 interface TranslationCardProps {
   result: TranslationResult
   onCopy: (text: string) => void
-  onDelete: (id: string) => void
-  onServiceRemove: (id: string) => void
+  onRemove: (id: string) => void
 }
 
-function TranslationCard({ result, onCopy, onDelete, onServiceRemove }: TranslationCardProps) {
+function TranslationCard({ result, onCopy, onRemove }: TranslationCardProps) {
   const { theme } = useTheme()
 
   const handleCopy = () => {
@@ -22,15 +21,16 @@ function TranslationCard({ result, onCopy, onDelete, onServiceRemove }: Translat
   }
 
   const hasContent = result.isLoading || result.error || result.text
+  const providerItem = PROVIDER_ITEMS[result.provider as keyof typeof PROVIDER_ITEMS]
 
   return (
     <div className="border rounded-lg bg-card">
       <div className={`flex items-center justify-between px-3 py-2 ${hasContent ? 'border-b' : ''}`}>
         <div className="flex items-center space-x-2">
-          {result.provider && PROVIDER_ITEMS[result.provider as keyof typeof PROVIDER_ITEMS]
+          {providerItem
             ? (
                 <ProviderIcon
-                  logo={PROVIDER_ITEMS[result.provider as keyof typeof PROVIDER_ITEMS].logo(theme)}
+                  logo={providerItem.logo(theme)}
                   name={result.name}
                   size="sm"
                 />
@@ -56,10 +56,7 @@ function TranslationCard({ result, onCopy, onDelete, onServiceRemove }: Translat
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => {
-              onDelete(result.id)
-              onServiceRemove(result.id)
-            }}
+            onClick={() => onRemove(result.id)}
             className="h-7 w-7 text-destructive hover:text-destructive"
             title="Delete card"
           >
@@ -102,31 +99,21 @@ function TranslationCard({ result, onCopy, onDelete, onServiceRemove }: Translat
 
 interface TranslationPanelProps {
   results: TranslationResult[]
-  selectedServices: SelectedService[]
+  selectedServices: ServiceInfo[]
   onCopy: (text: string) => void
-  onDeleteCard: (id: string) => void
-  onServiceRemove: (id: string) => void
+  onRemove: (id: string) => void
 }
 
-export function TranslationPanel({ results, selectedServices, onCopy, onDeleteCard, onServiceRemove }: TranslationPanelProps) {
+export function TranslationPanel({ results, selectedServices, onCopy, onRemove }: TranslationPanelProps) {
   // Create cards for all selected services, showing empty state if no result yet
-  const serviceCards = selectedServices.map((service) => {
-    const existingResult = results.find(result => result.id === service.id)
-
-    if (existingResult) {
-      return existingResult
-    }
-
-    // Create empty card for selected service
-    return {
+  const displayCards = selectedServices.map(service =>
+    results.find(r => r.id === service.id) ?? {
       id: service.id,
       name: service.name,
       provider: service.provider,
-      text: undefined,
-      error: undefined,
       isLoading: false,
-    }
-  })
+    },
+  )
 
   if (selectedServices.length === 0) {
     return (
@@ -142,13 +129,12 @@ export function TranslationPanel({ results, selectedServices, onCopy, onDeleteCa
 
   return (
     <div className="space-y-3">
-      {serviceCards.map(result => (
+      {displayCards.map(result => (
         <TranslationCard
           key={result.id}
           result={result}
           onCopy={onCopy}
-          onDelete={onDeleteCard}
-          onServiceRemove={onServiceRemove}
+          onRemove={onRemove}
         />
       ))}
     </div>

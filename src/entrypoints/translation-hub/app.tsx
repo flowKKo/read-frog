@@ -1,5 +1,5 @@
 import type { LangCodeISO6393 } from '@read-frog/definitions'
-import type { SelectedService, TranslationResult } from './types'
+import type { ServiceInfo, TranslationResult } from './types'
 import { useAtomValue } from 'jotai'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
@@ -19,7 +19,7 @@ export default function App() {
   const [sourceLanguage, setSourceLanguage] = useState<LangCodeISO6393>(language.sourceCode === 'auto' ? 'eng' : language.sourceCode)
   const [targetLanguage, setTargetLanguage] = useState<LangCodeISO6393>(language.targetCode)
   const [inputText, setInputText] = useState('')
-  const [selectedServices, setSelectedServices] = useState<SelectedService[]>([])
+  const [selectedServices, setSelectedServices] = useState<ServiceInfo[]>([])
   const [translationResults, setTranslationResults] = useState<TranslationResult[]>([])
 
   // Get default services from hook
@@ -106,19 +106,14 @@ export default function App() {
     })
   }, [inputText, selectedServices, sourceLanguage, targetLanguage, language.level, providersConfig, updateResult])
 
-  // Auto-retranslate when language changes if there's text
-  const prevLanguagesRef = useRef({ sourceLanguage, targetLanguage })
-
+  // Auto-retranslate when language changes if there's text and previous results exist
+  const languageKey = `${sourceLanguage}-${targetLanguage}`
   useEffect(() => {
-    const prevLanguages = prevLanguagesRef.current
-    const languageChanged = prevLanguages.sourceLanguage !== sourceLanguage || prevLanguages.targetLanguage !== targetLanguage
-
-    if (languageChanged && inputText.trim() && selectedServices.length > 0 && !isTranslating) {
+    if (inputText.trim() && selectedServices.length > 0 && !isTranslating && translationResults.length > 0) {
       void handleTranslate()
     }
-
-    prevLanguagesRef.current = { sourceLanguage, targetLanguage }
-  }, [sourceLanguage, targetLanguage, inputText, selectedServices.length, isTranslating, handleTranslate])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only trigger on language change
+  }, [languageKey])
 
   const handleInputChange = useCallback((value: string) => {
     setInputText(value)
@@ -132,12 +127,9 @@ export default function App() {
     toast.success('Translation copied to clipboard!')
   }, [])
 
-  const handleDeleteCard = useCallback((id: string) => {
-    setTranslationResults(prev => prev.filter(result => result.id !== id))
-  }, [])
-
-  const handleServiceRemove = useCallback((id: string) => {
-    setSelectedServices(prev => prev.filter(service => service.id !== id))
+  const handleRemoveService = useCallback((id: string) => {
+    setTranslationResults(prev => prev.filter(r => r.id !== id))
+    setSelectedServices(prev => prev.filter(s => s.id !== id))
   }, [])
 
   return (
@@ -171,15 +163,13 @@ export default function App() {
                 onChange={handleInputChange}
                 onTranslate={handleTranslate}
                 disabled={selectedServices.length === 0}
-                isTranslating={isTranslating}
                 placeholder="Enter the text you want to translate..."
               />
               <TranslationPanel
                 results={translationResults}
                 selectedServices={selectedServices}
                 onCopy={handleCopyText}
-                onDeleteCard={handleDeleteCard}
-                onServiceRemove={handleServiceRemove}
+                onRemove={handleRemoveService}
               />
             </div>
           </main>

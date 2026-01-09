@@ -1,9 +1,8 @@
-export interface SelectedService {
+export interface ServiceInfo {
   id: string
   name: string
   provider: string
-  enabled: boolean
-  type?: 'normal' | 'ai'
+  type: 'normal' | 'ai'
 }
 
 export interface TranslationResult {
