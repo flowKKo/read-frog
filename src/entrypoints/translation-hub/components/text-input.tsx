@@ -1,5 +1,5 @@
 import { Icon } from '@iconify/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface TextInputProps {
   value: string
@@ -17,17 +17,23 @@ export function TextInput({
   disabled = false,
 }: TextInputProps) {
   const [isFocused, setIsFocused] = useState(false)
+  // Keep track of the latest callback without triggering effects
+  const onTranslateRef = useRef(onTranslate)
+
+  useEffect(() => {
+    onTranslateRef.current = onTranslate
+  }, [onTranslate])
 
   useEffect(() => {
     if (!value.trim())
       return
 
     const timer = setTimeout(() => {
-      onTranslate()
+      onTranslateRef.current()
     }, 1000)
 
     return () => clearTimeout(timer)
-  }, [value, onTranslate])
+  }, [value]) // Only trigger when value changes
 
   const handleClear = () => {
     onChange('')
