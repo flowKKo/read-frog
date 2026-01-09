@@ -20,7 +20,7 @@ function TranslationCard({ result, onCopy, onRemove }: TranslationCardProps) {
     }
   }
 
-  const hasContent = result.isLoading || result.error || result.text
+  const hasContent = result.error || result.text
   const providerItem = PROVIDER_ITEMS[result.provider as keyof typeof PROVIDER_ITEMS]
 
   return (
@@ -42,6 +42,9 @@ function TranslationCard({ result, onCopy, onRemove }: TranslationCardProps) {
               )}
         </div>
         <div className="flex items-center space-x-1">
+          {result.isLoading && (
+            <Icon icon="tabler:loader-2" className="h-4 w-4 animate-spin text-muted-foreground" />
+          )}
           {result.text && !result.isLoading && (
             <Button
               variant="ghost"
@@ -57,7 +60,7 @@ function TranslationCard({ result, onCopy, onRemove }: TranslationCardProps) {
             variant="ghost"
             size="icon"
             onClick={() => onRemove(result.id)}
-            className="h-7 w-7 text-destructive hover:text-destructive"
+            className="h-7 w-7"
             title="Delete card"
           >
             <Icon icon="tabler:x" className="h-3.5 w-3.5" />
@@ -67,30 +70,21 @@ function TranslationCard({ result, onCopy, onRemove }: TranslationCardProps) {
 
       {hasContent && (
         <div className="p-3">
-          {result.isLoading
+          {result.error
             ? (
-                <div className="flex items-center justify-center py-4">
-                  <div className="flex items-center space-x-2 text-muted-foreground">
-                    <Icon icon="tabler:loader" className="h-4 w-4 animate-spin" />
-                    <span className="text-sm">Translating...</span>
+                <div className="py-2">
+                  <div className="flex items-center space-x-2 text-destructive mb-1">
+                    <Icon icon="tabler:alert-circle" className="h-4 w-4" />
+                    <span className="text-sm font-medium">Translation Failed</span>
                   </div>
+                  <p className="text-xs text-muted-foreground">{result.error}</p>
                 </div>
               )
-            : result.error
-              ? (
-                  <div className="py-2">
-                    <div className="flex items-center space-x-2 text-destructive mb-1">
-                      <Icon icon="tabler:alert-circle" className="h-4 w-4" />
-                      <span className="text-sm font-medium">Translation Failed</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{result.error}</p>
-                  </div>
-                )
-              : (
-                  <div className="text-base leading-relaxed whitespace-pre-wrap">
-                    {result.text}
-                  </div>
-                )}
+            : (
+                <div className="text-base leading-relaxed whitespace-pre-wrap animate-in fade-in duration-300">
+                  {result.text}
+                </div>
+              )}
         </div>
       )}
     </div>

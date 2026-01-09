@@ -55,30 +55,21 @@ export function TranslationServiceDropdown({
 
   if (hasError) {
     return (
-      <div className="flex items-center gap-3">
-        <Button variant="outline" disabled className="justify-between min-w-64">
+      <div className="flex items-end justify-end">
+        <Button variant="outline" disabled className="justify-between min-w-52 h-9">
           <span>Translation Services (Error)</span>
           <Icon icon="tabler:exclamation-circle" className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleConfigureAPI}
-          className="shrink-0"
-        >
-          <Icon icon="tabler:settings" className="h-3.5 w-3.5 mr-1.5" />
-          Configure API
         </Button>
       </div>
     )
   }
 
   return (
-    <div className="flex items-end gap-3">
+    <div className="flex items-end justify-end">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="justify-between min-w-64">
-            <span>Configure Translation Services</span>
+          <Button variant="outline" className="justify-between min-w-52 h-9">
+            <span>Translation Services</span>
             <div className="flex items-center gap-2">
               {enabledCount > 0 && (
                 <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
@@ -89,10 +80,19 @@ export function TranslationServiceDropdown({
             </div>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-80" align="start">
+        <DropdownMenuContent className="w-80" align="end">
           <div className="p-2">
-            <div className="text-sm font-medium text-foreground mb-2">
-              Select Translation Services
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-foreground">
+                Select Translation Services
+              </span>
+              <span
+                onClick={handleConfigureAPI}
+                className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary cursor-pointer hover:underline"
+              >
+                <Icon icon="tabler:settings" className="h-3.5 w-3.5" />
+                Configure API
+              </span>
             </div>
             <div className="max-h-80 overflow-y-auto">
               {availableServices.length > 0
@@ -123,16 +123,6 @@ export function TranslationServiceDropdown({
           </div>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleConfigureAPI}
-        className="shrink-0"
-      >
-        <Icon icon="tabler:settings" className="h-3.5 w-3.5 mr-1.5" />
-        Configure API
-      </Button>
     </div>
   )
 }

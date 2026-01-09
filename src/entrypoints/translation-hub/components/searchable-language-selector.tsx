@@ -114,7 +114,7 @@ export function SearchableLanguageSelector({
 
       <div className="relative">
         <div
-          className={`w-full border rounded-md px-3 py-2 bg-background cursor-pointer transition-colors ${
+          className={`w-full h-9 flex items-center border rounded-md px-3 bg-background cursor-pointer transition-colors ${
             isOpen ? 'border-primary ring-2 ring-primary/20' : 'border-border hover:border-border/80'
           }`}
           onClick={() => {
@@ -142,12 +142,12 @@ export function SearchableLanguageSelector({
                   }}
                   onKeyDown={handleKeyDown}
                   placeholder="Search languages..."
-                  className="w-full bg-transparent focus:outline-none text-sm relative z-10"
+                  className="w-full bg-transparent focus:outline-none text-sm"
                   autoFocus
                 />
               )
             : (
-                <div className="flex items-center justify-between">
+                <div className="flex-1 flex items-center justify-between">
                   <span className="text-sm truncate">{langCodeLabel(value)}</span>
                   <Icon icon="tabler:chevron-down" className="h-4 w-4 text-muted-foreground shrink-0" />
                 </div>

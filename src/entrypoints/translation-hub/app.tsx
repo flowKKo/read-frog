@@ -50,22 +50,32 @@ export default function App() {
     setTargetLanguage(temp)
   }
 
-  const handleTranslate = useCallback(async () => {
-    if (!inputText.trim() || selectedServices.length === 0)
+  // Helper to translate specific services
+  const translateServices = useCallback(async (services: ServiceInfo[]) => {
+    if (!inputText.trim() || services.length === 0)
       return
 
-    // Create initial results with loading state
-    const initialResults: TranslationResult[] = selectedServices.map(service => ({
-      id: service.id,
-      name: service.name,
-      provider: service.provider,
-      isLoading: true,
-    }))
+    // Add loading state while preserving existing text
+    setTranslationResults((prev) => {
+      const existingIds = new Set(services.map(s => s.id))
+      const existingResults = prev.filter(r => !existingIds.has(r.id))
 
-    setTranslationResults(initialResults)
+      const updatedResults: TranslationResult[] = services.map((service) => {
+        const existing = prev.find(r => r.id === service.id)
+        return {
+          id: service.id,
+          name: service.name,
+          provider: service.provider,
+          isLoading: true,
+          text: existing?.text,
+        }
+      })
 
-    // Real translation API calls with async streaming results
-    const translationPromises = selectedServices.map(async (service) => {
+      return [...existingResults, ...updatedResults]
+    })
+
+    // Translation API calls
+    const translationPromises = services.map(async (service) => {
       try {
         const providerConfig = getProviderConfigById(providersConfig, service.id)
         if (!providerConfig) {
@@ -94,7 +104,7 @@ export default function App() {
     const timeoutId = setTimeout(() => {
       setTranslationResults(prev =>
         prev.map(result =>
-          result.isLoading
+          result.isLoading && services.some(s => s.id === result.id)
             ? { ...result, isLoading: false, error: 'Translation timed out' }
             : result,
         ),
@@ -104,7 +114,15 @@ export default function App() {
     void Promise.allSettled(translationPromises).finally(() => {
       clearTimeout(timeoutId)
     })
-  }, [inputText, selectedServices, sourceLanguage, targetLanguage, language.level, providersConfig, updateResult])
+  }, [inputText, sourceLanguage, targetLanguage, language.level, providersConfig, updateResult])
+
+  const handleTranslate = useCallback(async () => {
+    if (!inputText.trim() || selectedServices.length === 0)
+      return
+
+    // Translate all selected services
+    await translateServices(selectedServices)
+  }, [inputText, selectedServices, translateServices])
 
   // Auto-retranslate when language changes if there's text and previous results exist
   const languageKey = `${sourceLanguage}-${targetLanguage}`
@@ -114,6 +132,21 @@ export default function App() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Only trigger on language change
   }, [languageKey])
+
+  // Auto-translate when new services are added and there's text
+  const prevServicesRef = useRef<ServiceInfo[]>([])
+  useEffect(() => {
+    const prevIds = new Set(prevServicesRef.current.map(s => s.id))
+    const newServices = selectedServices.filter(s => !prevIds.has(s.id))
+
+    // If there are new services and we have text, translate only those
+    if (newServices.length > 0 && inputText.trim()) {
+      void translateServices(newServices)
+    }
+
+    prevServicesRef.current = selectedServices
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only trigger on selectedServices change
+  }, [selectedServices])
 
   const handleInputChange = useCallback((value: string) => {
     setInputText(value)
@@ -162,7 +195,6 @@ export default function App() {
                 value={inputText}
                 onChange={handleInputChange}
                 onTranslate={handleTranslate}
-                disabled={selectedServices.length === 0}
                 placeholder="Enter the text you want to translate..."
               />
               <TranslationPanel
