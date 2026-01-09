@@ -11,6 +11,7 @@ import { PersonalizedPrompts } from './personalized-prompt'
 import { PreloadConfig } from './preload-config'
 import { RequestBatch } from './request-batch'
 import { RequestRate } from './request-rate'
+import { SmallParagraphFilter } from './small-paragraph-filter'
 import { TranslationMode } from './translation-mode'
 
 export function TranslationPage() {
@@ -27,6 +28,7 @@ export function TranslationPage() {
       <RequestRate />
       <RequestBatch />
       <PreloadConfig />
+      <SmallParagraphFilter />
       <ClearCacheConfig />
     </PageLayout>
   )

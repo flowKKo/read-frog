@@ -1,3 +1,5 @@
+import { STATE_MESSAGE_CLASS, SUBTITLES_VIEW_CLASS, TRANSLATE_BUTTON_CLASS, YOUTUBE_NATIVE_SUBTITLES_CLASS } from './subtitles'
+
 export const FORCE_BLOCK_TAGS = new Set([
   'BODY',
   'H1',
@@ -127,12 +129,17 @@ export const CUSTOM_DONT_WALK_INTO_ELEMENT_SELECTOR_MAP: Record<string, string[]
     '#more-replies',
     '#info',
     '#badges *',
+    `${YOUTUBE_NATIVE_SUBTITLES_CLASS}`,
+    `.${SUBTITLES_VIEW_CLASS}`,
+    `.${STATE_MESSAGE_CLASS}`,
+    `.${TRANSLATE_BUTTON_CLASS}`,
   ],
 }
 
 export const CUSTOM_FORCE_BLOCK_TRANSLATION_SELECTOR_MAP: Record<string, string[]> = {
   'github.com': [
     '.react-directory-row-commit-cell *',
+    'task-lists', // https://github.com/mengxi-ream/read-frog/issues/867
   ],
   'engoo.com': [
     '#windowexercise-2 > div > div > div.css-ep7xq6 > div > div > div.css-19m2fbm *',

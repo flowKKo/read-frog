@@ -8,6 +8,7 @@ import {
 } from '@/utils/constants/dom-labels'
 import { FORCE_BLOCK_TAGS } from '@/utils/constants/dom-rules'
 import {
+  isCustomForceBlockTranslation,
   isDontWalkIntoAndDontTranslateAsChildElement,
   isDontWalkIntoButTranslateAsChildElement,
   isHTMLElement,
@@ -20,7 +21,20 @@ import {
 
 export function extractTextContent(node: TransNode, config: Config): string {
   if (isTextNode(node)) {
-    return node.textContent ?? ''
+    const text = node.textContent ?? ''
+    const trimmed = text.trim()
+    if (trimmed === '')
+      return ' '
+    const leadingWs = text.slice(0, text.length - text.trimStart().length)
+    const trailingWs = text.slice(text.trimEnd().length)
+    const hasLeading = /[^\S\n]/.test(leadingWs)
+    const hasTrailing = /[^\S\n]/.test(trailingWs)
+    return (hasLeading ? ' ' : '') + trimmed + (hasTrailing ? ' ' : '')
+  }
+
+  // Handle <br> elements as line breaks
+  if (isHTMLElement(node) && node.tagName === 'BR') {
+    return '\n'
   }
 
   // We already don't walk and label the element which isDontWalkIntoElement
@@ -121,7 +135,7 @@ export function walkAndLabelElement(
 
   const isInlineNode = isShallowInlineHTMLElement(element)
 
-  if (isShallowBlockHTMLElement(element) || forceBlock) {
+  if (isShallowBlockHTMLElement(element) || forceBlock || isCustomForceBlockTranslation(element)) {
     element.setAttribute(BLOCK_ATTRIBUTE, '')
   }
   else if (isInlineNode) {

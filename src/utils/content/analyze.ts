@@ -2,15 +2,15 @@ import type { LangCodeISO6393 } from '@read-frog/definitions'
 import { Readability } from '@mozilla/readability'
 import { LANG_CODE_TO_EN_NAME, langCodeISO6393Schema } from '@read-frog/definitions'
 import { generateText } from 'ai'
-import { franc } from 'franc-min'
+import { franc } from 'franc'
 import z from 'zod'
 import { flattenToParagraphs } from '@/entrypoints/side.content/utils/article'
 import { isLLMTranslateProviderConfig } from '@/types/config/provider'
 import { getProviderConfigById } from '../config/helpers'
 import { getLocalConfig } from '../config/storage'
-import { getProviderOptions } from '../constants/model'
 import { logger } from '../logger'
 import { getTranslateModelById } from '../providers/model'
+import { getProviderOptionsWithOverride } from '../providers/options'
 import { cleanText, removeDummyNodes } from './utils'
 
 export type DetectionSource = 'llm' | 'franc' | 'fallback'
@@ -120,9 +120,9 @@ export async function detectLanguageWithLLM(
       return null
     }
 
-    const { models: { translate }, name: providerName } = providerConfig
+    const { models: { translate }, provider, providerOptions: userProviderOptions, temperature } = providerConfig
     const translateModel = translate.isCustomModel ? translate.customModel : translate.model
-    const providerOptions = getProviderOptions(translateModel ?? '', providerName)
+    const providerOptions = getProviderOptionsWithOverride(translateModel ?? '', provider, userProviderOptions)
     const model = await getTranslateModelById(providerConfig.id)
 
     // Create language list for prompt
@@ -150,6 +150,7 @@ ${languageList}`
           model,
           system,
           prompt,
+          temperature,
           providerOptions,
         })
 

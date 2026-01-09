@@ -97,13 +97,20 @@ options:
         noModels: 没有可用的模型
         selectModel: 选择模型
         apiKeyRequired: 请先添加 API 密钥
+      advancedOptions: 高级选项
+      temperature: 温度
+      temperatureHint: 控制响应的随机性。较低的值（0）更确定性，较高的值更具创造性。范围因提供商而异。留空则使用提供商默认值。
+      providerOptions: 提供商选项
+      providerOptionsHint: 用于非标准 API 功能（如思考/推理模式）的提供商特定选项。详情请参阅 Vercel AI SDK 文档或您的提供商官方文档。
+      providerOptionsDocsLink: 查看提供商文档
+      invalidJson: JSON 格式无效
     providers:
       description:
         openai: 提供 GPT-4o 等模型
         deepseek: 推荐在中国使用
         openrouter: 多个 LLM 提供商的统一接口，按使用量付费
         ollama: 在本地机器上运行大语言模型，确保完全隐私
-        gemini: 具有先进推理能力的谷歌旗舰 AI 模型
+        google: 具有先进推理能力的谷歌旗舰 AI 模型
         anthropic: 以安全性和推理能力著称的 Claude 模型
         xai: 马斯克的 AI 公司，提供具有实时数据访问能力的 Grok 模型
         siliconflow: 面向中国和国际模型的高性能推理平台
@@ -111,7 +118,7 @@ options:
         ai302: 提供最新、全面的模型和按量付费 API
         openaiCompatible: OpenAI API 兼容的第三方
         deeplx: 非官方 DeepL API
-        amazonBedrock: 面向企业级基础模型的 AWS 托管服务
+        bedrock: 面向企业级基础模型的 AWS 托管服务
         groq: 专注于超高速 LLM 推理速度的专用硬件
         deepinfra: 面向热门开源模型的经济高效云推理
         mistral: 专注于高效多语言模型的欧洲 AI 公司
@@ -123,6 +130,7 @@ options:
         perplexity: 实时知识增强 AI，提供语境化翻译和阅读辅助
         vercel: 针对网页内容翻译和分析优化的 AI 模型
         volcengine: 字节跳动旗下云平台，提供豆包系列大模型
+        minimax: MiniMax AI平台，提供先进的MiniMax-M2系列大模型
     apiKey:
       showAPIKey: 显示 API Key
     howToConfigure: 如何配置?
@@ -168,6 +176,29 @@ options:
       title: 选择工具栏
     contextMenu:
       title: 右键菜单
+    inputTranslation:
+      title: 输入翻译
+  inputTranslation:
+    toggle:
+      title: 启用三连空格翻译
+      description: 在任意输入框中快速按3次空格键即可翻译其内容
+    direction:
+      title: 翻译方向
+      description: 选择文本翻译的方向
+      normal: 源语言 → 目标语言
+      reverse: 目标语言 → 源语言
+      cycle: 循环切换
+    useCustomTarget:
+      title: 目标语言
+      description: 选择翻译的目标语言
+      sourceLanguage: 陪读蛙设置的来源语言
+      customTarget: 指定目标语言
+    threshold:
+      title: 触发阈值
+      description: 连续空格按键之间的时间间隔
+      label: 阈值 (毫秒)
+      hint: 连续空格按键之间的时间间隔 (100-1000毫秒)
+      error: 数值必须在 $1 到 $2 之间
   floatingButtonAndToolbar:
     title: 悬浮按钮和工具栏
     floatingButtonDemoImageAlt: 悬浮按钮演示
@@ -236,6 +267,8 @@ options:
     personalizedPrompts:
       title: 个性化 Prompt
       description: 自定义不同类型的 Prompt，可以在翻译时自行调整 Prompt 类型。Prompt 表示以用户身份发送给 LLM 的文本。
+      communityPrompts: 获取或分享社区 Prompt
+      communityPromptsUrl: https://github.com/mengxi-ream/read-frog/discussions/820
       addPrompt: 添加 Prompt
       default: 通用
       importSuccess: 导入成功
@@ -318,9 +351,19 @@ options:
       threshold:
         title: 可见度阈值
         description: 触发翻译所需的元素可见度百分比（0-1）。较高的值会延迟翻译，直到更多元素可见。
+    smallParagraphFilter:
+      title: 小段落过滤
+      description: 跳过翻译少于指定字符数或词数的文本节点（0 = 禁用）
+      minCharacters:
+        title: 最小字符数
+        description: 少于此字符数的文本节点将不会被翻译。字符计数包含空格。
+      minWords:
+        title: 最小词数
+        description: 少于此词数的文本节点将不会被翻译。使用 Intl.Segmenter 进行跨语言准确分词。
+      error: 数值必须在 $1 到 $2 之间
     nodeTranslationHotkey:
-      title: 悬停翻译快捷键
-      description: 自定义悬停在文本上翻译段落的修饰键
+      title: 悬停或长按翻译快捷键
+      description: 自定义悬停翻译的修饰键，或使用鼠标长按翻译段落
     llmProviderConfigured: 已配置 LLM 翻译提供商
     llmProviderNotConfigured: 未配置 LLM 翻译提供商
     autoTranslateLanguages:
@@ -463,6 +506,11 @@ options:
         confirm: 确认
         cancel: 取消
         description: 该操作将清空您的所有自定义配置，并将其重置为默认值，请确认是否清除。
+  videoSubtitles:
+    title: 视频字幕
+    description: 当前仅支持 YouTube 视频字幕
+    enable: 开启视频字幕
+    enableDescription: 启用后，YouTube 播放器控制栏会出现翻译按钮。点击即可开始翻译字幕。
   whatsNew:
     title: 最近更新
   survey:
@@ -509,3 +557,29 @@ speak:
   openaiApiKeyNotConfigured: OpenAI API Key 未配置
 shortcutKeySelector:
   placeholder: 请输入快捷键
+subtitles:
+  state:
+    idle: 就绪
+    fetching: 字幕获取中
+    fetchSuccess: 字幕加载成功
+    fetchFailed: 字幕获取失败
+    processing: 字幕翻译中（预计等待 2 分钟）
+    error: 发生错误
+  errors:
+    http429: 429 youtube 字幕接口请求次数过多，请稍后再试
+    http404: 404 未找到 youtube 字幕
+    http403: 403 youtube 字幕访问被拒绝
+    http500: 500 youtube 服务器错误
+    invalidResponse: youtube 字幕响应格式无效
+    networkError: 获取字幕时发生网络错误
+    fetchSubTimeout: 获取 youtube 字幕超时
+    buttonNotFound: 字幕按钮未找到
+    noSubtitlesFound: 未找到字幕
+    videoNotFound: 视频元素未找到
+    controlsBarNotFound: 控制栏未找到
+hotkey:
+  control: Ctrl
+  alt: Option
+  shift: Shift
+  backtick: 反引号
+  clickAndHold: 点击并按住

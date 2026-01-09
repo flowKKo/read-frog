@@ -56,6 +56,24 @@ export function SettingsNav() {
             </SidebarMenuButton>
           </SidebarMenuItem>
 
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild isActive={pathname === '/video-subtitles'}>
+              <Link to="/video-subtitles">
+                <Icon icon="tabler:subtitles" />
+                <span>{i18n.t('options.videoSubtitles.title')}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild isActive={pathname === '/input-translation'}>
+              <Link to="/input-translation">
+                <Icon icon="tabler:keyboard" />
+                <span>{i18n.t('options.overlayTools.inputTranslation.title')}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
           <Collapsible defaultOpen={isOverlayToolsActive} className="group/collapsible">
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>

@@ -1,4 +1,5 @@
 import type { LangCodeISO6393 } from '@read-frog/definitions'
+import type { Config } from '@/types/config/config'
 import { createShadowRootUi, defineContentScript, storage } from '#imports'
 import { kebabCase } from 'case-anything'
 import ReactDOM from 'react-dom/client'
@@ -14,6 +15,7 @@ import { insertShadowRootUIWrapperInto } from '@/utils/shadow-root'
 import { addStyleToShadow } from '@/utils/styles'
 import App from './app'
 import { bindTranslationShortcutKey } from './translation-control/bind-translation-shortcut'
+import { handleTranslationModeChange } from './translation-control/handle-config-change'
 import { registerNodeTranslationTriggers } from './translation-control/node-translation'
 import { PageTranslationManager } from './translation-control/page-translation'
 import './listen'
@@ -96,11 +98,14 @@ export default defineContentScript({
         if (manager.isActive) {
           manager.stop()
         }
-        const { detectedCodeOrUnd } = await getDocumentInfo()
-        const detectedCode: LangCodeISO6393 = detectedCodeOrUnd === 'und' ? 'eng' : detectedCodeOrUnd
-        await storage.setItem<LangCodeISO6393>(`local:${DETECTED_CODE_STORAGE_KEY}`, detectedCode)
-        // Notify background script that URL has changed, let it decide whether to automatically enable translation
-        void sendMessage('checkAndAskAutoPageTranslation', { url: to, detectedCodeOrUnd })
+        // Only the top frame should detect and set language to avoid race conditions from iframes
+        if (window === window.top) {
+          const { detectedCodeOrUnd } = await getDocumentInfo()
+          const detectedCode: LangCodeISO6393 = detectedCodeOrUnd === 'und' ? 'eng' : detectedCodeOrUnd
+          await storage.setItem<LangCodeISO6393>(`local:${DETECTED_CODE_STORAGE_KEY}`, detectedCode)
+          // Notify background script that URL has changed, let it decide whether to automatically enable translation
+          void sendMessage('checkAndAskAutoPageTranslation', { url: to, detectedCodeOrUnd })
+        }
       }
     }
 
@@ -112,8 +117,11 @@ export default defineContentScript({
     void bindTranslationShortcutKey(manager)
 
     // This may not work when the tab is not active, if so, need refresh the webpage
-    storage.watch(`local:${CONFIG_STORAGE_KEY}`, () => {
+    storage.watch<Config>(`local:${CONFIG_STORAGE_KEY}`, (newConfig, oldConfig) => {
       void bindTranslationShortcutKey(manager)
+
+      // Auto re-translate when translation mode changes while page translation is active
+      handleTranslationModeChange(newConfig, oldConfig, manager)
     })
 
     // Listen for translation state changes from background
@@ -124,11 +132,14 @@ export default defineContentScript({
       enabled ? void manager.start() : manager.stop()
     })
 
-    const { detectedCodeOrUnd } = await getDocumentInfo()
-    const initialDetectedCode: LangCodeISO6393 = detectedCodeOrUnd === 'und' ? 'eng' : detectedCodeOrUnd
-    await storage.setItem<LangCodeISO6393>(`local:${DETECTED_CODE_STORAGE_KEY}`, initialDetectedCode)
+    // Only the top frame should detect and set language to avoid race conditions from iframes
+    if (window === window.top) {
+      const { detectedCodeOrUnd } = await getDocumentInfo()
+      const initialDetectedCode: LangCodeISO6393 = detectedCodeOrUnd === 'und' ? 'eng' : detectedCodeOrUnd
+      await storage.setItem<LangCodeISO6393>(`local:${DETECTED_CODE_STORAGE_KEY}`, initialDetectedCode)
 
-    // Check if auto-translation should be enabled for initial page load
-    void sendMessage('checkAndAskAutoPageTranslation', { url: window.location.href, detectedCodeOrUnd })
+      // Check if auto-translation should be enabled for initial page load
+      void sendMessage('checkAndAskAutoPageTranslation', { url: window.location.href, detectedCodeOrUnd })
+    }
   },
 })

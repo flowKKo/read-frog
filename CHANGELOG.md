@@ -1,5 +1,95 @@
 # @read-frog/extension
 
+## 1.22.0
+
+### Minor Changes
+
+- [#859](https://github.com/mengxi-ream/read-frog/pull/859) [`ed8ed19`](https://github.com/mengxi-ream/read-frog/commit/ed8ed1946b76a85df1264872bb5dd7459a2d34e5) Thanks [@zmrlft](https://github.com/zmrlft)! - feat: add click and hold to translate
+
+- [#817](https://github.com/mengxi-ream/read-frog/pull/817) [`db45a88`](https://github.com/mengxi-ream/read-frog/commit/db45a88ef4a0c9b8b19fe4e2bd55b2b02ca54c27) Thanks [@guoyongchang](https://github.com/guoyongchang)! - feat: add triple-space input translation feature
+
+- [#856](https://github.com/mengxi-ream/read-frog/pull/856) [`597ce14`](https://github.com/mengxi-ream/read-frog/commit/597ce14e70aae37b5fa6b538e8b02a78ae93ab86) Thanks [@mengxi-ream](https://github.com/mengxi-ream)! - feat: add minimum characters filter for page translation
+
+### Patch Changes
+
+- [#868](https://github.com/mengxi-ream/read-frog/pull/868) [`ff23528`](https://github.com/mengxi-ream/read-frog/commit/ff2352805ee0923cc761234eeb3d457504c91b1d) Thanks [@taiiiyang](https://github.com/taiiiyang)! - fix: supplement subtitles sentence end pattern with international punctuation
+
+- [#869](https://github.com/mengxi-ream/read-frog/pull/869) [`98e2edf`](https://github.com/mengxi-ream/read-frog/commit/98e2edfc0bcde7d57c7bc626e9542ffb7c0d7daf) Thanks [@ananaBMaster](https://github.com/ananaBMaster)! - fix: force <task-list> to be block in github website
+
+- [#856](https://github.com/mengxi-ream/read-frog/pull/856) [`597ce14`](https://github.com/mengxi-ream/read-frog/commit/597ce14e70aae37b5fa6b538e8b02a78ae93ab86) Thanks [@mengxi-ream](https://github.com/mengxi-ream)! - fix: improve floating button drag smoothness by deferring storage writes
+
+- [#862](https://github.com/mengxi-ream/read-frog/pull/862) [`acc7d8d`](https://github.com/mengxi-ream/read-frog/commit/acc7d8d0fe1267fcf4779e17be3ad58d5f3e5dca) Thanks [@taiiiyang](https://github.com/taiiiyang)! - feat: add minimum words filter for small paragraph translation
+
+- [#866](https://github.com/mengxi-ream/read-frog/pull/866) [`f95cf61`](https://github.com/mengxi-ream/read-frog/commit/f95cf61a4daf87364f7f4fd72166f9309becbca8) Thanks [@taiiiyang](https://github.com/taiiiyang)! - feat: make video subtitles feature available as public beta
+
+## 1.21.4
+
+### Patch Changes
+
+- [#853](https://github.com/mengxi-ream/read-frog/pull/853) [`42f6b2c`](https://github.com/mengxi-ream/read-frog/commit/42f6b2c3d2098fad7dc5941cd2cad80f4dc14337) Thanks [@mengxi-ream](https://github.com/mengxi-ream)! - chore: migrate atomFamily from jotai/utils to jotai-family
+
+- [#851](https://github.com/mengxi-ream/read-frog/pull/851) [`13ae51e`](https://github.com/mengxi-ream/read-frog/commit/13ae51e09d006088d7aa5ddadb31393a83521a68) Thanks [@mengxi-ream](https://github.com/mengxi-ream)! - chore: upgrade dependencies
+
+## 1.21.3
+
+### Patch Changes
+
+- [#850](https://github.com/mengxi-ream/read-frog/pull/850) [`4b3ba80`](https://github.com/mengxi-ream/read-frog/commit/4b3ba802218983e0f208618509827d778bbeaa8f) Thanks [@mengxi-ream](https://github.com/mengxi-ream)! - fix: normalize whitespace without preserving newlines in translation
+
+- [#839](https://github.com/mengxi-ream/read-frog/pull/839) [`ce49281`](https://github.com/mengxi-ream/read-frog/commit/ce49281f254f87456e13a3d2520426ee6a10f835) Thanks [@Yukiniro](https://github.com/Yukiniro)! - chore: replace franc-min with franc
+
+- [#839](https://github.com/mengxi-ream/read-frog/pull/839) [`ce49281`](https://github.com/mengxi-ream/read-frog/commit/ce49281f254f87456e13a3d2520426ee6a10f835) Thanks [@Yukiniro](https://github.com/Yukiniro)! - fix: upgrade zod and ai packages to solve memory issue of type check
+
+## 1.21.2
+
+### Patch Changes
+
+- [#838](https://github.com/mengxi-ream/read-frog/pull/838) [`dadee30`](https://github.com/mengxi-ream/read-frog/commit/dadee308734ac62b1ce5c3b512be1097e8bbddf6) Thanks [@taiiiyang](https://github.com/taiiiyang)! - feat: Improve the speed of subtitle translation through block translation
+
+## 1.21.1
+
+### Patch Changes
+
+- [#844](https://github.com/mengxi-ream/read-frog/pull/844) [`6f0f9fa`](https://github.com/mengxi-ream/read-frog/commit/6f0f9fabe02a07af8dfb37f5f6a44443770571e3) Thanks [@taiiiyang](https://github.com/taiiiyang)! - feat: add drag-and-drop sorting for API provider cards
+
+- [#841](https://github.com/mengxi-ream/read-frog/pull/841) [`33acbfc`](https://github.com/mengxi-ream/read-frog/commit/33acbfc7afa3bc265181bb1e1a1d8222e857df1a) Thanks [@Yukiniro](https://github.com/Yukiniro)! - fix: ensure language detection only occurs in the top frame to prevent race conditions with iframes
+
+- [#846](https://github.com/mengxi-ream/read-frog/pull/846) [`35eaa5f`](https://github.com/mengxi-ream/read-frog/commit/35eaa5f6aa3eade07b5f6920fe21073784f12b06) Thanks [@ananaBMaster](https://github.com/ananaBMaster)! - fix: no new line when translating twitter in translation only mode
+
+## 1.21.0
+
+### Minor Changes
+
+- [#836](https://github.com/mengxi-ream/read-frog/pull/836) [`3119bd4`](https://github.com/mengxi-ream/read-frog/commit/3119bd409bab1da2eae97e54a187fbc8a746d514) Thanks [@mengxi-ream](https://github.com/mengxi-ream)! - feat: add MiniMax AI provider support
+
+- [#835](https://github.com/mengxi-ream/read-frog/pull/835) [`f817e81`](https://github.com/mengxi-ream/read-frog/commit/f817e81f143ecf4d8729fdea557c029c574c9c9f) Thanks [@mengxi-ream](https://github.com/mengxi-ream)! - feat: add custom provider options and temperature configuration
+
+- [#809](https://github.com/mengxi-ream/read-frog/pull/809) [`aa62e0f`](https://github.com/mengxi-ream/read-frog/commit/aa62e0f11343f4c0fdec2ca7c19d420606426567) Thanks [@taiiiyang](https://github.com/taiiiyang)! - feat: implement youtube subtitles
+
+- [#834](https://github.com/mengxi-ream/read-frog/pull/834) [`6eaaa95`](https://github.com/mengxi-ream/read-frog/commit/6eaaa958acf6b69930738b341acee882889ea715) Thanks [@mengxi-ream](https://github.com/mengxi-ream)! - ai: upgrade AI SDK from v5 to v6
+
+### Patch Changes
+
+- [#827](https://github.com/mengxi-ream/read-frog/pull/827) [`ab0582e`](https://github.com/mengxi-ream/read-frog/commit/ab0582efbc82c25cce8c7173ed746f776b4d8805) Thanks [@mengxi-ream](https://github.com/mengxi-ream)! - fix: clear translation state when navigating to a new URL in the same tab
+
+- [#825](https://github.com/mengxi-ream/read-frog/pull/825) [`e259773`](https://github.com/mengxi-ream/read-frog/commit/e259773b2f896ef650a7f8b57255a206e2187fd8) Thanks [@Yukiniro](https://github.com/Yukiniro)! - perf: don't retry when request queue fail in batch queue
+
+- [#830](https://github.com/mengxi-ream/read-frog/pull/830) [`5ed2c53`](https://github.com/mengxi-ream/read-frog/commit/5ed2c536fcfce7b9f1e200f8dcc4e505fd9ff37d) Thanks [@mengxi-ream](https://github.com/mengxi-ream)! - fix: translation styles not applying inside website Shadow DOMs
+
+- [#825](https://github.com/mengxi-ream/read-frog/pull/825) [`e259773`](https://github.com/mengxi-ream/read-frog/commit/e259773b2f896ef650a7f8b57255a206e2187fd8) Thanks [@Yukiniro](https://github.com/Yukiniro)! - fix: fixed the thinking error of gemini 3
+
+- [#832](https://github.com/mengxi-ream/read-frog/pull/832) [`aa32739`](https://github.com/mengxi-ream/read-frog/commit/aa32739a50175a06039bac0743e1730e362e5f18) Thanks [@Yukiniro](https://github.com/Yukiniro)! - fix: re-translate page on translation mode change while active
+
+- [#806](https://github.com/mengxi-ream/read-frog/pull/806) [`7d6465f`](https://github.com/mengxi-ream/read-frog/commit/7d6465fafbd58a5c8e9a1bb16708a27b9ed56906) Thanks [@Yukiniro](https://github.com/Yukiniro)! - feat: supports automatic toolbar positioning
+
+## 1.20.7
+
+### Patch Changes
+
+- [`434068d`](https://github.com/mengxi-ream/read-frog/commit/434068d4182900ef49e97e37eb4c914bd414eea0) Thanks [@ananaBMaster](https://github.com/ananaBMaster)! - chore: add prompt sharing discussion links
+
+- [#815](https://github.com/mengxi-ream/read-frog/pull/815) [`282a852`](https://github.com/mengxi-ream/read-frog/commit/282a8521e6225d3fd1f547093e0345b4e93c607c) Thanks [@mengxi-ream](https://github.com/mengxi-ream)! - fix: treat last synced config as null if it is invalid to unlock sync flow
+
 ## 1.20.6
 
 ### Patch Changes

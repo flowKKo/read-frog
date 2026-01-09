@@ -97,13 +97,20 @@ options:
         noModels: No models available
         selectModel: Select a model
         apiKeyRequired: Please add API key first
+      advancedOptions: Advanced Options
+      temperature: Temperature
+      temperatureHint: Controls randomness in responses. Lower values (0) are more deterministic, higher values are more creative. Range varies by provider. Leave empty to use provider default.
+      providerOptions: Provider Options
+      providerOptionsHint: Provider-specific options for non-standard API features like thinking/reasoning mode. See the Vercel AI SDK docs or your provider's official documentation for configuration details.
+      providerOptionsDocsLink: View Provider Docs
+      invalidJson: Invalid JSON format
     providers:
       description:
         openai: Provides models like GPT-4o
         deepseek: Recommend to use in China
         openrouter: Unified interface for multiple LLM providers with pay-per-use pricing
         ollama: Run large language models locally on your machine for complete privacy
-        gemini: Google's flagship AI models with advanced reasoning capabilities
+        google: Google's flagship AI models with advanced reasoning capabilities
         anthropic: Claude models known for safety and reasoning excellence
         xai: Elon Musk's AI company offering Grok models with real-time data access
         siliconflow: High-performance inference platform for Chinese and international models
@@ -111,7 +118,7 @@ options:
         ai302: Provides the latest and most comprehensive models with pay-as-you-go API
         openaiCompatible: Third-party and OpenAI API compatible
         deeplx: Unofficial DeepL API
-        amazonBedrock: AWS managed service for enterprise-grade foundation models
+        bedrock: AWS managed service for enterprise-grade foundation models
         groq: Specialized hardware for ultra-fast LLM inference speeds
         deepinfra: Cost-effective cloud inference for popular open-source models
         mistral: European AI company specializing in efficient multilingual models
@@ -123,6 +130,7 @@ options:
         perplexity: Real-time knowledge-enhanced AI for contextual translations and reading assistance
         vercel: Optimized AI models for web content translation and analysis
         volcengine: ByteDance's cloud AI platform offering Doubao models for translation and reading
+        minimax: MiniMax AI platform offering advanced MiniMax-M2 models for text generation
     apiKey:
       showAPIKey: Show API Key
     howToConfigure: How to configure?
@@ -169,6 +177,29 @@ options:
       title: Selection Toolbar
     contextMenu:
       title: Context Menu
+    inputTranslation:
+      title: Input Translation
+  inputTranslation:
+    toggle:
+      title: Enable Triple-Space Translation
+      description: Press spacebar 3 times quickly in any input field to translate its content
+    direction:
+      title: Translation Direction
+      description: Choose how text should be translated
+      normal: Source → Target
+      reverse: Target → Source
+      cycle: Cycle
+    useCustomTarget:
+      title: Target Language
+      description: Choose which language to translate to
+      sourceLanguage: Read Frog's source language
+      customTarget: Custom target language
+    threshold:
+      title: Trigger Threshold
+      description: Time interval between space presses to trigger translation
+      label: Threshold (ms)
+      hint: Time in milliseconds between consecutive space presses (100-1000ms)
+      error: Value must be between $1 and $2
   floatingButtonAndToolbar:
     title: Floating Button & Toolbar
     floatingButtonDemoImageAlt: Floating Button Demo
@@ -237,6 +268,8 @@ options:
     personalizedPrompts:
       title: Personalized Prompts
       description: Customizing different types of Prompts allows you to adjust the Prompt type yourself during translation. A Prompt represents the text that the user sends to the LLM.
+      communityPrompts: Get or share prompts from community
+      communityPromptsUrl: https://github.com/mengxi-ream/read-frog/discussions/821
       addPrompt: Add Prompt
       default: Default
       importSuccess: Import Success
@@ -319,9 +352,19 @@ options:
       threshold:
         title: Visibility Threshold
         description: Percentage of element visibility required to trigger translation (0-1). Higher values delay translation until more of the element is visible.
+    smallParagraphFilter:
+      title: Small Paragraph Filter
+      description: Skip translating text nodes with fewer characters or words than the threshold (0 = disabled)
+      minCharacters:
+        title: Minimum Characters
+        description: Text nodes with fewer characters than this value will not be translated. Character count includes whitespace.
+      minWords:
+        title: Minimum Words
+        description: Text nodes with fewer words than this value will not be translated. Uses Intl.Segmenter for accurate word counting across all languages.
+      error: Value must be between $1 and $2
     nodeTranslationHotkey:
-      title: Hover Translation Shortcut
-      description: Customize the modifier key for hovering over text to translate paragraphs
+      title: Hover or Long-Press Translation Shortcut
+      description: Customize the hover modifier key or use long press to translate paragraphs
     llmProviderConfigured: LLM translate provider configured
     llmProviderNotConfigured: No LLM translate provider configured
     autoTranslateLanguages:
@@ -464,6 +507,11 @@ options:
         confirm: Confirm
         cancel: Cancel
         description: This operation will clear all your custom configurations and reset them to default values. Please confirm.
+  videoSubtitles:
+    title: Video Subtitles
+    description: Currently only supports YouTube video subtitles
+    enable: Enable Video Subtitles
+    enableDescription: When enabled, a translation button will appear in the YouTube player controls. Click it to start translating subtitles.
   whatsNew:
     title: What's New
   survey:
@@ -510,3 +558,29 @@ speak:
   openaiApiKeyNotConfigured: OpenAI API key is not configured
 shortcutKeySelector:
   placeholder: Please enter the shortcut
+subtitles:
+  state:
+    idle: Ready
+    fetching: Fetching captions
+    fetchSuccess: Captions loaded
+    fetchFailed: Failed to fetch captions
+    processing: Translating captions (approx. 2 minutes)
+    error: Error occurred
+  errors:
+    http429: 429 Too many requests to youtube subtitle API, please try again later
+    http404: 404 Youtube captions not found
+    http403: 403 Youtube caption access denied
+    http500: 500 Youtube server error
+    invalidResponse: Invalid Youtube subtitle response format
+    networkError: Network error occurred when fetching captions
+    fetchSubTimeout: Fetching youtube captions timed out
+    buttonNotFound: Subtitle button not found
+    noSubtitlesFound: No subtitles found
+    videoNotFound: Video element not found
+    controlsBarNotFound: Controls bar not found
+hotkey:
+  control: Ctrl
+  alt: Option
+  shift: Shift
+  backtick: Backtick
+  clickAndHold: Click and hold

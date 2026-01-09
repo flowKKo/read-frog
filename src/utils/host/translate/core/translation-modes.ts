@@ -15,6 +15,7 @@ import { extractTextContent } from '../../dom/traversal'
 import { removeTranslatedWrapperWithRestore } from '../dom/translation-cleanup'
 import { insertTranslatedNodeIntoWrapper } from '../dom/translation-insertion'
 import { findPreviousTranslatedWrapperInside } from '../dom/translation-wrapper'
+import { shouldFilterSmallParagraph } from '../filter-small-paragraph'
 import { setTranslationDirAndLang } from '../translation-attributes'
 import { createSpinnerInside, getTranslatedTextAndRemoveSpinner } from '../ui/spinner'
 import { isNumericContent } from '../ui/translation-utils'
@@ -47,7 +48,6 @@ export async function translateNodesBilingualMode(
   if (transNodes.length === 0) {
     return
   }
-
   try {
     // prevent duplicate translation
     if (transNodes.every(node => translatingNodes.has(node))) {
@@ -74,8 +74,11 @@ export async function translateNodesBilingualMode(
       }
     }
 
-    const textContent = transNodes.map(node => extractTextContent(node, config)).join(' ').trim()
+    const textContent = transNodes.map(node => extractTextContent(node, config)).join('').trim()
     if (!textContent || isNumericContent(textContent))
+      return
+
+    if (await shouldFilterSmallParagraph(textContent, config))
       return
 
     const ownerDoc = getOwnerDocument(targetNode)
@@ -213,8 +216,11 @@ export async function translateNodeTranslationOnlyMode(
       }
     }
 
-    const innerTextContent = transNodes.map(node => extractTextContent(node, config)).join(' ')
+    const innerTextContent = transNodes.map(node => extractTextContent(node, config)).join('')
     if (!innerTextContent.trim() || isNumericContent(innerTextContent))
+      return
+
+    if (await shouldFilterSmallParagraph(innerTextContent, config))
       return
 
     const cleanTextContent = (content: string): string => {
@@ -223,7 +229,6 @@ export async function translateNodeTranslationOnlyMode(
 
       let cleanedContent = content.replace(MARK_ATTRIBUTES_REGEX, '')
       cleanedContent = cleanedContent.replace(/<!--[\s\S]*?-->/g, ' ')
-      cleanedContent = cleanedContent.replace(/\s+/g, ' ').trim()
 
       return cleanedContent
     }

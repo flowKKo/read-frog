@@ -97,13 +97,20 @@ options:
         noModels: Không có mô hình nào
         selectModel: Chọn mô hình
         apiKeyRequired: Vui lòng thêm khóa API trước
+      advancedOptions: Tùy chọn nâng cao
+      temperature: Nhiệt độ
+      temperatureHint: Kiểm soát tính ngẫu nhiên trong phản hồi. Giá trị thấp (0) mang tính xác định hơn, giá trị cao mang tính sáng tạo hơn. Phạm vi thay đổi theo nhà cung cấp. Để trống để sử dụng giá trị mặc định của nhà cung cấp.
+      providerOptions: Tùy chọn nhà cung cấp
+      providerOptionsHint: Các tùy chọn dành riêng cho nhà cung cấp cho các tính năng API không chuẩn như chế độ suy nghĩ/lập luận. Xem tài liệu Vercel AI SDK hoặc tài liệu chính thức của nhà cung cấp để biết chi tiết cấu hình.
+      providerOptionsDocsLink: Xem Tài liệu Nhà cung cấp
+      invalidJson: Định dạng JSON không hợp lệ
     providers:
       description:
         openai: Cung cấp các mô hình như GPT-4o
         deepseek: Khuyến nghị sử dụng ở Trung Quốc
         openrouter: Giao diện thống nhất cho nhiều nhà cung cấp LLM với giá trả theo lần sử dụng
         ollama: Chạy các mô hình ngôn ngữ lớn cục bộ trên máy của bạn để bảo mật hoàn toàn
-        gemini: Các mô hình AI hàng đầu của Google với khả năng suy luận tiên tiến
+        google: Các mô hình AI hàng đầu của Google với khả năng suy luận tiên tiến
         anthropic: Các mô hình Claude nổi tiếng về độ an toàn và khả năng suy luận xuất sắc
         xai: Công ty AI của Elon Musk cung cấp các mô hình Grok với truy cập dữ liệu thời gian thực
         siliconflow: Nền tảng suy luận hiệu suất cao cho các mô hình Trung Quốc và quốc tế
@@ -111,7 +118,7 @@ options:
         ai302: Cung cấp các mô hình mới nhất và toàn diện nhất với API trả theo lần sử dụng
         openaiCompatible: Bên thứ ba và tương thích API OpenAI
         deeplx: API DeepL không chính thức
-        amazonBedrock: Dịch vụ được quản lý bởi AWS cho các mô hình nền tảng cấp doanh nghiệp
+        bedrock: Dịch vụ được quản lý bởi AWS cho các mô hình nền tảng cấp doanh nghiệp
         groq: Phần cứng chuyên dụng cho tốc độ suy luận LLM siêu nhanh
         deepinfra: Suy luận đám mây hiệu quả chi phí cho các mô hình mã nguồn mở phổ biến
         mistral: Công ty AI châu Âu chuyên về các mô hình đa ngôn ngữ hiệu quả
@@ -123,6 +130,7 @@ options:
         perplexity: AI nâng cao kiến thức thời gian thực cho bản dịch ngữ cảnh và hỗ trợ đọc
         vercel: Các mô hình AI tối ưu hóa cho dịch và phân tích nội dung web
         volcengine: Nền tảng AI đám mây của ByteDance cung cấp các mô hình Doubao cho dịch và đọc
+        minimax: Nền tảng AI MiniMax cung cấp các mô hình MiniMax-M2 tiên tiến
     apiKey:
       showAPIKey: Hiển thị API Key
     howToConfigure: Cấu hình như thế nào?
@@ -169,6 +177,29 @@ options:
       title: Thanh công cụ chọn
     contextMenu:
       title: Menu ngữ cảnh
+    inputTranslation:
+      title: Dịch đầu vào
+  inputTranslation:
+    toggle:
+      title: Bật dịch ba lần nhấn phím cách
+      description: Nhấn phím cách nhanh 3 lần trong bất kỳ trường nhập nào để dịch nội dung
+    direction:
+      title: Hướng dịch
+      description: Chọn hướng dịch văn bản
+      normal: Nguồn → Đích
+      reverse: Đích → Nguồn
+      cycle: Luân phiên
+    useCustomTarget:
+      title: Ngôn ngữ đích
+      description: Chọn ngôn ngữ dịch
+      sourceLanguage: Ngôn ngữ nguồn của Read Frog
+      customTarget: Ngôn ngữ đích tùy chỉnh
+    threshold:
+      title: Ngưỡng kích hoạt
+      description: Khoảng thời gian giữa các lần nhấn phím cách
+      label: Ngưỡng (ms)
+      hint: Thời gian tính bằng mili giây giữa các lần nhấn phím cách liên tiếp (100-1000ms)
+      error: Giá trị phải từ $1 đến $2
   floatingButtonAndToolbar:
     title: Nút nổi & Thanh công cụ
     floatingButtonDemoImageAlt: Demo nút nổi
@@ -319,9 +350,19 @@ options:
       threshold:
         title: Ngưỡng hiển thị
         description: Tỷ lệ phần trăm hiển thị của phần tử cần thiết để kích hoạt dịch (0-1). Giá trị cao hơn sẽ trì hoãn dịch cho đến khi nhiều phần tử hơn được hiển thị.
+    smallParagraphFilter:
+      title: Bộ lọc văn bản ngắn
+      description: Bỏ qua dịch các nút văn bản có ít ký tự hoặc từ hơn ngưỡng (0 = tắt)
+      minCharacters:
+        title: Số ký tự tối thiểu
+        description: Các nút văn bản có ít ký tự hơn giá trị này sẽ không được dịch. Số ký tự bao gồm khoảng trắng.
+      minWords:
+        title: Số từ tối thiểu
+        description: Các nút văn bản có ít từ hơn giá trị này sẽ không được dịch. Sử dụng Intl.Segmenter để đếm từ chính xác trên tất cả các ngôn ngữ.
+      error: Giá trị phải từ $1 đến $2
     nodeTranslationHotkey:
-      title: Phím tắt dịch khi di chuột
-      description: Tùy chỉnh phím bổ trợ để dịch đoạn văn khi di chuột qua văn bản
+      title: Phím tắt dịch khi di chuột hoặc nhấn giữ
+      description: Tùy chỉnh phím bổ trợ khi di chuột hoặc dùng nhấn giữ để dịch đoạn văn
     llmProviderConfigured: Đã cấu hình nhà cung cấp dịch LLM
     llmProviderNotConfigured: Chưa cấu hình nhà cung cấp dịch LLM
     autoTranslateLanguages:
@@ -464,6 +505,11 @@ options:
         confirm: Xác nhận
         cancel: Hủy
         description: Thao tác này sẽ xóa tất cả cấu hình tùy chỉnh của bạn và đặt lại về giá trị mặc định. Vui lòng xác nhận.
+  videoSubtitles:
+    title: Phụ đề video
+    description: Hiện chỉ hỗ trợ phụ đề video YouTube
+    enable: Bật phụ đề video
+    enableDescription: Khi bật, nút dịch sẽ xuất hiện trong thanh điều khiển YouTube. Nhấp để bắt đầu dịch phụ đề.
   whatsNew:
     title: Có gì mới
   survey:
@@ -510,3 +556,29 @@ speak:
   openaiApiKeyNotConfigured: API key OpenAI chưa được cấu hình
 shortcutKeySelector:
   placeholder: Vui lòng nhập phím tắt
+subtitles:
+  state:
+    idle: Sẵn sàng
+    fetching: Đang lấy phụ đề
+    fetchSuccess: Đã tải phụ đề
+    fetchFailed: Lấy phụ đề thất bại
+    processing: Đang dịch phụ đề (khoảng 2 phút)
+    error: Đã xảy ra lỗi
+  errors:
+    http429: 429 Đã gửi quá nhiều yêu cầu đến API phụ đề Youtube, vui lòng thử lại sau
+    http404: 404 Không tìm thấy phụ đề Youtube
+    http403: 403 Không được phép truy cập phụ đề Youtube
+    http500: 500 Lỗi máy chủ Youtube
+    invalidResponse: Định dạng phản hồi phụ đề Youtube không hợp lệ
+    networkError: Xảy ra lỗi mạng khi lấy phụ đề
+    fetchSubTimeout: Quá thời gian lấy phụ đề Youtube
+    buttonNotFound: Không tìm thấy nút phụ đề
+    noSubtitlesFound: Không tìm thấy phụ đề
+    videoNotFound: Không tìm thấy phần tử video
+    controlsBarNotFound: Không tìm thấy thanh điều khiển
+hotkey:
+  control: Ctrl
+  alt: Option
+  shift: Shift
+  backtick: Dấu huyền
+  clickAndHold: Nhấn và giữ

@@ -97,13 +97,20 @@ options:
         noModels: Mevcut model yok
         selectModel: Model seç
         apiKeyRequired: Lütfen önce API anahtarı ekleyin
+      advancedOptions: Gelişmiş Seçenekler
+      temperature: Sıcaklık
+      temperatureHint: Yanıtlardaki rastgeleliği kontrol eder. Düşük değerler (0) daha belirleyici, yüksek değerler daha yaratıcıdır. Aralık sağlayıcıya göre değişir. Sağlayıcı varsayılanını kullanmak için boş bırakın.
+      providerOptions: Sağlayıcı Seçenekleri
+      providerOptionsHint: Düşünme/akıl yürütme modu gibi standart dışı API özellikleri için sağlayıcıya özel seçenekler. Ayrıntılar için Vercel AI SDK belgelerine veya sağlayıcınızın resmi belgelerine bakın.
+      providerOptionsDocsLink: Sağlayıcı Belgelerini Görüntüle
+      invalidJson: Geçersiz JSON formatı
     providers:
       description:
         openai: GPT-4o gibi modeller sağlar
         deepseek: Çin'de kullanım için önerilir
         openrouter: Kullandıkça öde fiyatlandırmasıyla birden fazla LLM sağlayıcısı için birleşik arayüz
         ollama: Tam gizlilik için büyük dil modellerini makinenizde yerel olarak çalıştırın
-        gemini: Gelişmiş akıl yürütme yeteneklerine sahip Google'ın amiral gemisi AI modelleri
+        google: Gelişmiş akıl yürütme yeteneklerine sahip Google'ın amiral gemisi AI modelleri
         anthropic: Güvenlik ve akıl yürütme mükemmelliğiyle tanınan Claude modelleri
         xai: Gerçek zamanlı veri erişimli Grok modelleri sunan Elon Musk'ın AI şirketi
         siliconflow: Çin ve uluslararası modeller için yüksek performanslı çıkarım platformu
@@ -111,7 +118,7 @@ options:
         ai302: Kullandıkça öde API ile en son ve en kapsamlı modelleri sağlar
         openaiCompatible: Üçüncü taraf ve OpenAI API uyumlu
         deeplx: Resmi olmayan DeepL API
-        amazonBedrock: Kurumsal düzeyde temel modeller için AWS yönetilen hizmeti
+        bedrock: Kurumsal düzeyde temel modeller için AWS yönetilen hizmeti
         groq: Ultra hızlı LLM çıkarım hızları için özel donanım
         deepinfra: Popüler açık kaynak modelleri için uygun maliyetli bulut çıkarımı
         mistral: Verimli çok dilli modellerde uzmanlaşmış Avrupalı AI şirketi
@@ -123,6 +130,7 @@ options:
         perplexity: Bağlamsal çeviriler ve okuma yardımı için gerçek zamanlı bilgi ile güçlendirilmiş AI
         vercel: Web içeriği çevirisi ve analizi için optimize edilmiş AI modelleri
         volcengine: Çeviri ve okuma için Doubao modelleri sunan ByteDance'ın bulut AI platformu
+        minimax: Gelişmiş MiniMax-M2 modelleri sunan MiniMax AI platformu
     apiKey:
       showAPIKey: API Anahtarını Göster
     howToConfigure: Nasıl yapılandırılır?
@@ -169,6 +177,29 @@ options:
       title: Seçim Araç Çubuğu
     contextMenu:
       title: Bağlam Menüsü
+    inputTranslation:
+      title: Giriş Çevirisi
+  inputTranslation:
+    toggle:
+      title: Üçlü Boşluk Çevirisini Etkinleştir
+      description: Herhangi bir giriş alanında boşluk tuşuna hızlıca 3 kez basarak içeriği çevirin
+    direction:
+      title: Çeviri Yönü
+      description: Metin çeviri yönünü seçin
+      normal: Kaynak → Hedef
+      reverse: Hedef → Kaynak
+      cycle: Döngü
+    useCustomTarget:
+      title: Hedef Dil
+      description: Çeviri yapılacak dili seçin
+      sourceLanguage: Read Frog kaynak dili
+      customTarget: Özel hedef dil
+    threshold:
+      title: Tetikleme Eşiği
+      description: Boşluk tuşuna basışlar arasındaki zaman aralığı
+      label: Eşik (ms)
+      hint: Ardışık boşluk tuşuna basışlar arasındaki milisaniye cinsinden süre (100-1000ms)
+      error: Değer $1 ile $2 arasında olmalıdır
   floatingButtonAndToolbar:
     title: Yüzen Buton ve Araç Çubuğu
     floatingButtonDemoImageAlt: Yüzen Buton Demosu
@@ -319,9 +350,19 @@ options:
       threshold:
         title: Görünürlük Eşiği
         description: Çeviriyi tetiklemek için gereken öğe görünürlük yüzdesi (0-1). Daha yüksek değerler, öğenin daha fazlası görünür olana kadar çeviriyi geciktirir.
+    smallParagraphFilter:
+      title: Kısa Metin Filtresi
+      description: Eşik değerinden az karakterli veya kelimeli metin düğümlerinin çevirisini atla (0 = devre dışı)
+      minCharacters:
+        title: Minimum Karakter
+        description: Bu değerden az karakterli metin düğümleri çevrilmeyecektir. Karakter sayısı boşlukları içerir.
+      minWords:
+        title: Minimum Kelime
+        description: Bu değerden az kelimeli metin düğümleri çevrilmeyecektir. Tüm dillerde doğru kelime sayımı için Intl.Segmenter kullanılır.
+      error: Değer $1 ile $2 arasında olmalıdır
     nodeTranslationHotkey:
-      title: Üzerine Gelme Çeviri Kısayolu
-      description: Paragrafları çevirmek için metnin üzerine gelirken değiştirici tuşu özelleştirin
+      title: Üzerine Gelme veya Uzun Basma Çeviri Kısayolu
+      description: Üzerine gelme için değiştirici tuşu özelleştirin veya paragrafları çevirmek için uzun basın
     llmProviderConfigured: LLM çeviri sağlayıcısı yapılandırıldı
     llmProviderNotConfigured: LLM çeviri sağlayıcısı yapılandırılmadı
     autoTranslateLanguages:
@@ -464,6 +505,11 @@ options:
         confirm: Onayla
         cancel: İptal
         description: Bu işlem tüm özel yapılandırmalarınızı temizleyecek ve varsayılan değerlere sıfırlayacaktır. Lütfen onaylayın.
+  videoSubtitles:
+    title: Video Altyazıları
+    description: Şu anda yalnızca YouTube video altyazılarını desteklemektedir
+    enable: Video Altyazılarını Etkinleştir
+    enableDescription: Etkinleştirildiğinde, YouTube oynatıcı kontrollerinde bir çeviri düğmesi görünecektir. Altyazıları çevirmeye başlamak için tıklayın.
   whatsNew:
     title: Yenilikler
   survey:
@@ -510,3 +556,29 @@ speak:
   openaiApiKeyNotConfigured: OpenAI API anahtarı yapılandırılmadı
 shortcutKeySelector:
   placeholder: Lütfen kısayolu girin
+subtitles:
+  state:
+    idle: Hazır
+    fetching: Altyazılar alınıyor
+    fetchSuccess: Altyazılar yüklendi
+    fetchFailed: Altyazılar alınamadı
+    processing: Altyazılar çevriliyor (yaklaşık 2 dakika)
+    error: Bir hata oluştu
+  errors:
+    http429: 429 YouTube altyazı API'sine çok fazla istek gönderildi. Lütfen biraz bekleyip tekrar deneyin.
+    http404: 404 YouTube altyazı bulunamadı.
+    http403: 403 YouTube altyazı erişimi reddedildi.
+    http500: 500 YouTube sunucu hatası oluştu.
+    invalidResponse: YouTube altyazı yanıt biçimi geçersiz
+    networkError: YouTube altyazılar alınırken ağ hatası oluştu.
+    fetchSubTimeout: YouTube altyazılar alınırken zaman aşımı oluştu.
+    buttonNotFound: Altyazı butonu bulunamadı
+    noSubtitlesFound: Altyazı bulunamadı
+    videoNotFound: Video öğesi bulunamadı
+    controlsBarNotFound: Kontrol çubuğu bulunamadı
+hotkey:
+  control: Ctrl
+  alt: Option
+  shift: Shift
+  backtick: Ters tırnak
+  clickAndHold: Tıkla ve basılı tut
