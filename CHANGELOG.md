@@ -1,5 +1,11 @@
 # @read-frog/extension
 
+## 1.22.1
+
+### Patch Changes
+
+- [#871](https://github.com/mengxi-ream/read-frog/pull/871) [`3786b10`](https://github.com/mengxi-ream/read-frog/commit/3786b10fcefcd355ce539ce36dfff64ed7914b52) Thanks [@taiiiyang](https://github.com/taiiiyang)! - feat: allow drag video subtitles
+
 ## 1.22.0
 
 ### Minor Changes
