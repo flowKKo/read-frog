@@ -11,7 +11,7 @@ import { useAvailableServices } from './use-available-services'
 export function useTranslation() {
   const language = useAtomValue(configFieldsAtomMap.language)
   const providersConfig = useAtomValue(configFieldsAtomMap.providersConfig)
-  const { services: defaultServices } = useAvailableServices()
+  const { services: availableServices } = useAvailableServices()
 
   const [sourceLanguage, setSourceLanguage] = useState<LangCodeISO6393>(
     language.sourceCode === 'auto' ? 'eng' : language.sourceCode,
@@ -20,18 +20,16 @@ export function useTranslation() {
   const [inputText, setInputText] = useState('')
   const [selectedServices, setSelectedServices] = useState<ServiceInfo[]>([])
   const [translationResults, setTranslationResults] = useState<TranslationResult[]>([])
+  const isTranslating = translationResults.some(r => r.isLoading)
 
   // Initialize services on first load
   const isInitializedRef = useRef(false)
   useEffect(() => {
-    if (!isInitializedRef.current && selectedServices.length === 0 && defaultServices.length > 0) {
-      setSelectedServices(defaultServices)
+    if (!isInitializedRef.current && selectedServices.length === 0 && availableServices.length > 0) {
+      setSelectedServices(availableServices)
       isInitializedRef.current = true
     }
-  }, [defaultServices, selectedServices.length])
-
-  // Derive isTranslating from translationResults
-  const isTranslating = translationResults.length > 0 && translationResults.some(r => r.isLoading)
+  }, [availableServices, selectedServices.length])
 
   // Helper to update a single translation result
   const updateResult = useCallback((id: string, updates: Partial<TranslationResult>) => {
@@ -99,62 +97,43 @@ export function useTranslation() {
       }
     })
 
-    // Set a maximum timeout to prevent infinite loading
-    const timeoutId = setTimeout(() => {
-      setTranslationResults(prev =>
-        prev.map(result =>
-          result.isLoading && services.some(s => s.id === result.id)
-            ? { ...result, isLoading: false, error: 'Translation timed out' }
-            : result,
-        ),
-      )
-    }, 30000)
-
-    void Promise.allSettled(translationPromises).finally(() => {
-      clearTimeout(timeoutId)
-    })
+    void Promise.allSettled(translationPromises)
   }, [inputText, sourceLanguage, targetLanguage, language.level, providersConfig, updateResult])
 
   const handleTranslate = useCallback(async () => {
     if (!inputText.trim() || selectedServices.length === 0) {
       return
     }
-
-    // Translate all selected services
     await translateServices(selectedServices)
   }, [inputText, selectedServices, translateServices])
 
-  // Auto-retranslate when language changes if there's text and previous results exist
+  // Explicitly handle service toggle (add/remove)
+  const handleToggleService = useCallback((serviceId: string, enabled: boolean) => {
+    if (enabled) {
+      const service = availableServices.find(s => s.id === serviceId)
+      if (service) {
+        setSelectedServices(prev => [...prev, service])
+        // Trigger translation immediately for the new service
+        if (inputText.trim()) {
+          void translateServices([service])
+        }
+      }
+    }
+    else {
+      setSelectedServices(prev => prev.filter(s => s.id !== serviceId))
+      // Remove result immediately
+      setTranslationResults(prev => prev.filter(r => r.id !== serviceId))
+    }
+  }, [availableServices, inputText, translateServices])
+
+  // Auto-retranslate when language changes
   const languageKey = `${sourceLanguage}-${targetLanguage}`
   useEffect(() => {
     if (inputText.trim() && selectedServices.length > 0 && !isTranslating && translationResults.length > 0) {
       void handleTranslate()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only trigger on language change
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only trigger on language change key
   }, [languageKey])
-
-  // Auto-translate when new services are added and there's text
-  // Also clean up results for removed services
-  const prevServicesRef = useRef<ServiceInfo[]>([])
-  useEffect(() => {
-    const prevIds = new Set(prevServicesRef.current.map(s => s.id))
-    const currentIds = new Set(selectedServices.map(s => s.id))
-
-    // 1. Identify removed services and clean up their results
-    const hasRemovedServices = prevServicesRef.current.some(s => !currentIds.has(s.id))
-    if (hasRemovedServices) {
-      setTranslationResults(prev => prev.filter(r => currentIds.has(r.id)))
-    }
-
-    // 2. Identify new services and trigger translation if needed
-    const newServices = selectedServices.filter(s => !prevIds.has(s.id))
-    if (newServices.length > 0 && inputText.trim()) {
-      void translateServices(newServices)
-    }
-
-    prevServicesRef.current = selectedServices
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only trigger on selectedServices change
-  }, [selectedServices])
 
   const handleInputChange = useCallback((value: string) => {
     setInputText(value)
@@ -169,9 +148,8 @@ export function useTranslation() {
   }, [])
 
   const handleRemoveService = useCallback((id: string) => {
-    // Only update selected services; useEffect will handle result cleanup
-    setSelectedServices(prev => prev.filter(s => s.id !== id))
-  }, [])
+    handleToggleService(id, false)
+  }, [handleToggleService])
 
   return {
     sourceLanguage,
@@ -187,5 +165,6 @@ export function useTranslation() {
     handleLanguageExchange,
     handleCopyText,
     handleRemoveService,
+    handleToggleService, // Export new handler
   }
 }

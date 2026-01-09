@@ -13,12 +13,12 @@ export default function App() {
     inputText,
     handleInputChange,
     selectedServices,
-    setSelectedServices,
     translationResults,
     handleTranslate,
     handleLanguageExchange,
     handleCopyText,
     handleRemoveService,
+    handleToggleService,
   } = useTranslation()
 
   return (
@@ -43,7 +43,7 @@ export default function App() {
               />
               <TranslationServiceDropdown
                 selectedServices={selectedServices}
-                onServicesChange={setSelectedServices}
+                onToggleService={handleToggleService}
               />
 
               {/* Row 2: Content - aligned at same height */}

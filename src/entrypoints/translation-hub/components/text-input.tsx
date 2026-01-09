@@ -1,5 +1,5 @@
 import { Icon } from '@iconify/react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface TextInputProps {
   value: string
@@ -17,31 +17,16 @@ export function TextInput({
   disabled = false,
 }: TextInputProps) {
   const [isFocused, setIsFocused] = useState(false)
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const lastValueRef = useRef(value)
 
   useEffect(() => {
-    // Clear existing timeout
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-      timeoutRef.current = null
-    }
+    if (!value.trim())
+      return
 
-    // Only trigger if value has actually changed and is not empty
-    if (value.trim() && value !== lastValueRef.current) {
-      timeoutRef.current = setTimeout(() => {
-        onTranslate()
-      }, 1000)
-    }
+    const timer = setTimeout(() => {
+      onTranslate()
+    }, 1000)
 
-    lastValueRef.current = value
-
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
+    return () => clearTimeout(timer)
   }, [value, onTranslate])
 
   const handleClear = () => {

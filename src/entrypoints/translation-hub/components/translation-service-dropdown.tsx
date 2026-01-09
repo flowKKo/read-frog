@@ -14,29 +14,18 @@ import { ServiceSection } from './service-list-item'
 
 interface TranslationServiceDropdownProps {
   selectedServices: ServiceInfo[]
-  onServicesChange: (services: ServiceInfo[]) => void
+  onToggleService: (serviceId: string, enabled: boolean) => void
 }
 
 export function TranslationServiceDropdown({
   selectedServices,
-  onServicesChange,
+  onToggleService,
 }: TranslationServiceDropdownProps) {
   const { theme = 'light' } = useTheme()
   const { services: availableServices, error: hasError } = useAvailableServices()
 
+  // Keep this set for fast lookup of selected state
   const selectedIds = useMemo(() => new Set(selectedServices.map(s => s.id)), [selectedServices])
-
-  const handleServiceToggle = (serviceId: string, enabled: boolean) => {
-    if (enabled) {
-      const service = availableServices.find(s => s.id === serviceId)
-      if (service) {
-        onServicesChange([...selectedServices, service])
-      }
-    }
-    else {
-      onServicesChange(selectedServices.filter(s => s.id !== serviceId))
-    }
-  }
 
   const handleConfigureAPI = async () => {
     try {
@@ -103,14 +92,14 @@ export function TranslationServiceDropdown({
                         services={normalServices}
                         selectedIds={selectedIds}
                         theme={theme}
-                        onToggle={handleServiceToggle}
+                        onToggle={onToggleService}
                       />
                       <ServiceSection
                         title="AI Translator"
                         services={aiServices}
                         selectedIds={selectedIds}
                         theme={theme}
-                        onToggle={handleServiceToggle}
+                        onToggle={onToggleService}
                       />
                     </>
                   )
