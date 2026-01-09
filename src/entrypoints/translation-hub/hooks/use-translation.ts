@@ -128,12 +128,19 @@ export function useTranslation() {
 
   // Auto-retranslate when language changes
   const languageKey = `${sourceLanguage}-${targetLanguage}`
+  const prevLanguageKeyRef = useRef(languageKey)
+
   useEffect(() => {
+    // Only trigger logic if language key has changed
+    if (prevLanguageKeyRef.current === languageKey) {
+      return
+    }
+    prevLanguageKeyRef.current = languageKey
+
     if (inputText.trim() && selectedServices.length > 0 && !isTranslating && translationResults.length > 0) {
       void handleTranslate()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only trigger on language change key
-  }, [languageKey])
+  }, [languageKey, inputText, selectedServices, isTranslating, translationResults, handleTranslate])
 
   const handleInputChange = useCallback((value: string) => {
     setInputText(value)
