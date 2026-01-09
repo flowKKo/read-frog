@@ -1,17 +1,9 @@
+import type { SelectedService, TranslationResult } from '../types'
 import { Icon } from '@iconify/react'
 import ProviderIcon from '@/components/provider-icon'
 import { useTheme } from '@/components/providers/theme-provider'
 import { Button } from '@/components/shadcn/button'
 import { PROVIDER_ITEMS } from '@/utils/constants/providers'
-
-export interface TranslationResult {
-  id: string
-  name: string
-  provider: string
-  text?: string
-  error?: string
-  isLoading: boolean
-}
 
 interface TranslationCardProps {
   result: TranslationResult
@@ -106,13 +98,6 @@ function TranslationCard({ result, onCopy, onDelete, onServiceRemove }: Translat
       )}
     </div>
   )
-}
-
-interface SelectedService {
-  id: string
-  name: string
-  provider: string
-  enabled: boolean
 }
 
 interface TranslationPanelProps {

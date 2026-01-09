@@ -1,16 +1,16 @@
 import type { LangCodeISO6393 } from '@read-frog/definitions'
-import type { TranslationResult } from './components/translation-panel'
-import type { SelectedService } from './components/translation-service-dropdown'
+import type { SelectedService, TranslationResult } from './types'
 import { useAtomValue } from 'jotai'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { configFieldsAtomMap } from '@/utils/atoms/config'
-import { filterEnabledProvidersConfig, getLLMTranslateProvidersConfig, getNonAPIProvidersConfig, getProviderConfigById, getPureAPIProvidersConfig } from '@/utils/config/helpers'
+import { getProviderConfigById } from '@/utils/config/helpers'
 import { executeTranslate } from '@/utils/host/translate/execute-translate'
 import { LanguageControlPanel } from './components/language-control-panel'
 import { TextInput } from './components/text-input'
 import { TranslationPanel } from './components/translation-panel'
 import { TranslationServiceDropdown } from './components/translation-service-dropdown'
+import { useAvailableServices } from './hooks/use-available-services'
 
 export default function App() {
   const language = useAtomValue(configFieldsAtomMap.language)
@@ -21,32 +21,28 @@ export default function App() {
   const [inputText, setInputText] = useState('')
   const [selectedServices, setSelectedServices] = useState<SelectedService[]>([])
   const [translationResults, setTranslationResults] = useState<TranslationResult[]>([])
-  const [isTranslating, setIsTranslating] = useState(false)
-  const [isInitialized, setIsInitialized] = useState(false)
 
-  // Initialize default selected services
-  const defaultServices = useMemo(() => {
-    if (!providersConfig)
-      return []
+  // Get default services from hook
+  const { services: defaultServices } = useAvailableServices()
 
-    const filteredProvidersConfig = filterEnabledProvidersConfig(providersConfig)
-    return [
-      ...getNonAPIProvidersConfig(filteredProvidersConfig),
-      ...getPureAPIProvidersConfig(filteredProvidersConfig),
-      ...getLLMTranslateProvidersConfig(filteredProvidersConfig),
-    ].filter(p => p && p.id && p.name && p.provider).map(({ id, name, provider }) => ({
-      id,
-      name,
-      provider,
-      enabled: true,
-    }))
-  }, [providersConfig])
+  // Derive isTranslating from translationResults
+  const isTranslating = translationResults.length > 0 && translationResults.some(r => r.isLoading)
+
+  // Helper to update a single translation result
+  const updateResult = useCallback((id: string, updates: Partial<TranslationResult>) => {
+    setTranslationResults(prev =>
+      prev.map(result => result.id === id ? { ...result, ...updates } : result),
+    )
+  }, [])
 
   // Initialize services on first load
-  if (!isInitialized && selectedServices.length === 0 && defaultServices.length > 0) {
-    setSelectedServices(defaultServices)
-    setIsInitialized(true)
-  }
+  const isInitializedRef = useRef(false)
+  useEffect(() => {
+    if (!isInitializedRef.current && selectedServices.length === 0 && defaultServices.length > 0) {
+      setSelectedServices(defaultServices)
+      isInitializedRef.current = true
+    }
+  }, [defaultServices, selectedServices.length])
 
   const handleLanguageExchange = () => {
     const temp = sourceLanguage
@@ -57,8 +53,6 @@ export default function App() {
   const handleTranslate = useCallback(async () => {
     if (!inputText.trim() || selectedServices.length === 0)
       return
-
-    setIsTranslating(true)
 
     // Create initial results with loading state
     const initialResults: TranslationResult[] = selectedServices.map(service => ({
@@ -78,70 +72,39 @@ export default function App() {
           throw new Error(`Provider config not found for ${service.id}`)
         }
 
-        // Create language config object
         const langConfig = {
           sourceCode: sourceLanguage,
           targetCode: targetLanguage,
           level: language.level,
         }
 
-        // Call the real translation function
         const translatedText = await executeTranslate(inputText, langConfig, providerConfig)
-
-        // Update this specific result immediately when translation completes
-        setTranslationResults(prev =>
-          prev.map(result =>
-            result.id === service.id
-              ? {
-                  ...result,
-                  text: translatedText,
-                  isLoading: false,
-                  error: undefined,
-                }
-              : result,
-          ),
-        )
+        updateResult(service.id, { text: translatedText, isLoading: false, error: undefined })
       }
       catch (error) {
-        // Update this specific result with error immediately
-        setTranslationResults(prev =>
-          prev.map(result =>
-            result.id === service.id
-              ? {
-                  ...result,
-                  error: error instanceof Error ? error.message : 'Translation failed',
-                  isLoading: false,
-                  text: undefined,
-                }
-              : result,
-          ),
-        )
+        updateResult(service.id, {
+          error: error instanceof Error ? error.message : 'Translation failed',
+          isLoading: false,
+          text: undefined,
+        })
       }
-      return undefined
-    })
-
-    // Wait for at least one translation to complete and handle cleanup
-    void Promise.allSettled(translationPromises).finally(() => {
-      // Final check to ensure isTranslating is set to false
-      setTranslationResults((prev) => {
-        const allCompleted = prev.every(result => !result.isLoading)
-        if (allCompleted) {
-          setIsTranslating(false)
-        }
-        return prev
-      })
     })
 
     // Set a maximum timeout to prevent infinite loading
     const timeoutId = setTimeout(() => {
-      setIsTranslating(false)
+      setTranslationResults(prev =>
+        prev.map(result =>
+          result.isLoading
+            ? { ...result, isLoading: false, error: 'Translation timed out' }
+            : result,
+        ),
+      )
     }, 30000)
 
-    // Cleanup timeout if all translations complete early
     void Promise.allSettled(translationPromises).finally(() => {
       clearTimeout(timeoutId)
     })
-  }, [inputText, selectedServices, sourceLanguage, targetLanguage, language.level, providersConfig])
+  }, [inputText, selectedServices, sourceLanguage, targetLanguage, language.level, providersConfig, updateResult])
 
   // Auto-retranslate when language changes if there's text
   const prevLanguagesRef = useRef({ sourceLanguage, targetLanguage })
@@ -155,7 +118,7 @@ export default function App() {
     }
 
     prevLanguagesRef.current = { sourceLanguage, targetLanguage }
-  }, [sourceLanguage, targetLanguage, inputText, selectedServices, isTranslating, handleTranslate])
+  }, [sourceLanguage, targetLanguage, inputText, selectedServices.length, isTranslating, handleTranslate])
 
   const handleInputChange = useCallback((value: string) => {
     setInputText(value)

@@ -45,6 +45,12 @@ export function SearchableLanguageSelector({
   const dropdownRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
+  // Helper to update search and reset highlighted index together
+  const updateSearch = (newSearch: string) => {
+    setSearch(newSearch)
+    setHighlightedIndex(0)
+  }
+
   const filteredLanguages = langCodeISO6393Schema.options.filter((langCode) => {
     if (!search.trim())
       return true
@@ -58,19 +64,11 @@ export function SearchableLanguageSelector({
       || langCode.toLowerCase().includes(searchLower)
   })
 
-  // Reset highlighted index when search changes using derived state
-  const [prevSearch, setPrevSearch] = useState(search)
-
-  if (prevSearch !== search) {
-    setHighlightedIndex(0)
-    setPrevSearch(search)
-  }
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false)
-        setSearch('')
+        updateSearch('')
       }
     }
 
@@ -83,8 +81,7 @@ export function SearchableLanguageSelector({
   const handleSelect = (langCode: LangCodeISO6393) => {
     onValueChange(langCode)
     setIsOpen(false)
-    setSearch('')
-    setHighlightedIndex(0)
+    updateSearch('')
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -104,7 +101,7 @@ export function SearchableLanguageSelector({
     }
     else if (e.key === 'Escape') {
       setIsOpen(false)
-      setSearch('')
+      updateSearch('')
       inputRef.current?.blur()
     }
   }
@@ -135,13 +132,13 @@ export function SearchableLanguageSelector({
                   value={search}
                   onChange={(e) => {
                     if (!isComposing) {
-                      setSearch(e.target.value)
+                      updateSearch(e.target.value)
                     }
                   }}
                   onCompositionStart={() => setIsComposing(true)}
                   onCompositionEnd={(e) => {
                     setIsComposing(false)
-                    setSearch((e.target as HTMLInputElement).value)
+                    updateSearch((e.target as HTMLInputElement).value)
                   }}
                   onKeyDown={handleKeyDown}
                   placeholder="Search languages..."
