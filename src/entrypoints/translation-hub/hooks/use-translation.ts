@@ -18,18 +18,18 @@ export function useTranslation() {
   )
   const [targetLanguage, setTargetLanguage] = useState<LangCodeISO6393>(language.targetCode)
   const [inputText, setInputText] = useState('')
-  const [selectedServices, setSelectedServices] = useState<ServiceInfo[]>([])
+  const [selectedServices, setSelectedServices] = useState<ServiceInfo[]>(availableServices)
   const [translationResults, setTranslationResults] = useState<TranslationResult[]>([])
   const isTranslating = translationResults.some(r => r.isLoading)
 
-  // Initialize services on first load
-  const isInitializedRef = useRef(false)
+  // Initialize services if they load asynchronously
+  const isInitializedRef = useRef(availableServices.length > 0)
   useEffect(() => {
-    if (!isInitializedRef.current && selectedServices.length === 0 && availableServices.length > 0) {
+    if (!isInitializedRef.current && availableServices.length > 0) {
       setSelectedServices(availableServices)
       isInitializedRef.current = true
     }
-  }, [availableServices, selectedServices.length])
+  }, [availableServices])
 
   // Helper to update a single translation result
   const updateResult = useCallback((id: string, updates: Partial<TranslationResult>) => {
