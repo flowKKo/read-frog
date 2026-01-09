@@ -81,7 +81,10 @@ function TranslationCard({ result, onCopy, onRemove }: TranslationCardProps) {
                 </div>
               )
             : (
-                <div className="text-base leading-relaxed whitespace-pre-wrap animate-in fade-in duration-300">
+                <div
+                  key={result.text}
+                  className="text-base leading-relaxed whitespace-pre-wrap animate-in fade-in duration-300"
+                >
                   {result.text}
                 </div>
               )}

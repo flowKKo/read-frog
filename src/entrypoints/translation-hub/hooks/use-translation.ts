@@ -66,7 +66,7 @@ export function useTranslation() {
           name: service.name,
           provider: service.provider,
           isLoading: true,
-          text: existing?.text,
+          text: existing ? existing.text : undefined,
         }
       })
 
@@ -134,12 +134,20 @@ export function useTranslation() {
   }, [languageKey])
 
   // Auto-translate when new services are added and there's text
+  // Also clean up results for removed services
   const prevServicesRef = useRef<ServiceInfo[]>([])
   useEffect(() => {
     const prevIds = new Set(prevServicesRef.current.map(s => s.id))
-    const newServices = selectedServices.filter(s => !prevIds.has(s.id))
+    const currentIds = new Set(selectedServices.map(s => s.id))
 
-    // If there are new services and we have text, translate only those
+    // 1. Identify removed services and clean up their results
+    const hasRemovedServices = prevServicesRef.current.some(s => !currentIds.has(s.id))
+    if (hasRemovedServices) {
+      setTranslationResults(prev => prev.filter(r => currentIds.has(r.id)))
+    }
+
+    // 2. Identify new services and trigger translation if needed
+    const newServices = selectedServices.filter(s => !prevIds.has(s.id))
     if (newServices.length > 0 && inputText.trim()) {
       void translateServices(newServices)
     }
@@ -161,7 +169,7 @@ export function useTranslation() {
   }, [])
 
   const handleRemoveService = useCallback((id: string) => {
-    setTranslationResults(prev => prev.filter(r => r.id !== id))
+    // Only update selected services; useEffect will handle result cleanup
     setSelectedServices(prev => prev.filter(s => s.id !== id))
   }, [])
 
