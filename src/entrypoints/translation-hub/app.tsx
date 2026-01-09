@@ -34,31 +34,39 @@ export default function App() {
           <main className="px-6 pb-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-3">
               {/* Row 1: Controls */}
-              <LanguageControlPanel
-                sourceLanguage={sourceLanguage}
-                targetLanguage={targetLanguage}
-                onSourceLanguageChange={setSourceLanguage}
-                onTargetLanguageChange={setTargetLanguage}
-                onLanguageExchange={handleLanguageExchange}
-              />
-              <TranslationServiceDropdown
-                selectedServices={selectedServices}
-                onToggleService={handleToggleService}
-              />
+              <div className="order-1">
+                <LanguageControlPanel
+                  sourceLanguage={sourceLanguage}
+                  targetLanguage={targetLanguage}
+                  onSourceLanguageChange={setSourceLanguage}
+                  onTargetLanguageChange={setTargetLanguage}
+                  onLanguageExchange={handleLanguageExchange}
+                />
+              </div>
+              <div className="order-3 lg:order-2 flex justify-end lg:items-end lg:h-full">
+                <TranslationServiceDropdown
+                  selectedServices={selectedServices}
+                  onToggleService={handleToggleService}
+                />
+              </div>
 
-              {/* Row 2: Content - aligned at same height */}
-              <TextInput
-                value={inputText}
-                onChange={handleInputChange}
-                onTranslate={handleTranslate}
-                placeholder="Enter the text you want to translate..."
-              />
-              <TranslationPanel
-                results={translationResults}
-                selectedServices={selectedServices}
-                onCopy={handleCopyText}
-                onRemove={handleRemoveService}
-              />
+              {/* Row 2: Content */}
+              <div className="order-2 lg:order-3">
+                <TextInput
+                  value={inputText}
+                  onChange={handleInputChange}
+                  onTranslate={handleTranslate}
+                  placeholder="Enter the text you want to translate..."
+                />
+              </div>
+              <div className="order-4">
+                <TranslationPanel
+                  results={translationResults}
+                  selectedServices={selectedServices}
+                  onCopy={handleCopyText}
+                  onRemove={handleRemoveService}
+                />
+              </div>
             </div>
           </main>
         </div>
