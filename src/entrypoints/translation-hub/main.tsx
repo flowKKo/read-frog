@@ -4,6 +4,7 @@ import { Provider as JotaiProvider } from 'jotai'
 import { useHydrateAtoms } from 'jotai/utils'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import FrogToast from '@/components/frog-toast'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { TooltipProvider } from '@/components/shadcn/tooltip'
 import { configAtom } from '@/utils/atoms/config'
@@ -38,6 +39,7 @@ async function initApp() {
             <ThemeProvider>
               <TooltipProvider>
                 <App />
+                <FrogToast />
               </TooltipProvider>
             </ThemeProvider>
           </HydrateAtoms>

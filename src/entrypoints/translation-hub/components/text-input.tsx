@@ -51,7 +51,7 @@ export function TextInput({
   }
 
   return (
-    <div className="relative bg-background rounded-xl">
+    <div className="relative bg-background rounded-xl self-start">
       <div className={`relative border rounded-xl ${isFocused ? 'ring-1 ring-primary/30 border-primary/50' : 'border-border hover:border-border/80'}`}>
         <textarea
           value={value}
