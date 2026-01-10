@@ -1,6 +1,6 @@
 import type { ServiceInfo, TranslationResult } from '../types'
 import { useAtom, useAtomValue } from 'jotai'
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useEffectEvent, useRef } from 'react'
 import { toast } from 'sonner'
 import { configFieldsAtomMap } from '@/utils/atoms/config'
 import { getProviderConfigById } from '@/utils/config/helpers'
@@ -150,6 +150,12 @@ export function useTranslation() {
   const languageKey = `${sourceLanguage}-${targetLanguage}`
   const prevLanguageKeyRef = useRef(languageKey)
 
+  const onAutoTranslate = useEffectEvent(() => {
+    if (inputText.trim() && selectedServices.length > 0 && !isTranslating && translationResults.length > 0) {
+      void handleTranslate()
+    }
+  })
+
   useEffect(() => {
     // Only trigger logic if language key has changed
     if (prevLanguageKeyRef.current === languageKey) {
@@ -157,10 +163,8 @@ export function useTranslation() {
     }
     prevLanguageKeyRef.current = languageKey
 
-    if (inputText.trim() && selectedServices.length > 0 && !isTranslating && translationResults.length > 0) {
-      void handleTranslate()
-    }
-  }, [languageKey, inputText, selectedServices, isTranslating, translationResults, handleTranslate])
+    onAutoTranslate()
+  }, [languageKey])
 
   const handleInputChange = useCallback((value: string) => {
     setInputText(value)
