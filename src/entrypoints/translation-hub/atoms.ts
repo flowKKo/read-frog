@@ -10,8 +10,3 @@ export const inputTextAtom = atom('')
 export const selectedServicesAtom = atom<ServiceInfo[]>([])
 
 export const translationResultsAtom = atom<TranslationResult[]>([])
-
-export const isTranslatingAtom = atom((get) => {
-  const results = get(translationResultsAtom)
-  return results.some(r => r.isLoading)
-})

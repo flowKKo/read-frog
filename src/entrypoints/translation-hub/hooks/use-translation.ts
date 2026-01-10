@@ -25,88 +25,60 @@ export function useTranslation() {
   const [selectedServices, setSelectedServices] = useAtom(selectedServicesAtom)
   const [translationResults, setTranslationResults] = useAtom(translationResultsAtom)
 
-  const isTranslating = translationResults.some(r => r.isLoading)
+  // Initialization Effects
+  const isInitRef = useRef({ lang: false, services: false })
 
-  // Initialize languages from config
-  const isLangInitializedRef = useRef(false)
   useEffect(() => {
-    if (!isLangInitializedRef.current && language) {
+    if (!isInitRef.current.lang && language) {
       setSourceLanguage(language.sourceCode === 'auto' ? 'eng' : language.sourceCode)
       setTargetLanguage(language.targetCode)
-      isLangInitializedRef.current = true
+      isInitRef.current.lang = true
     }
   }, [language, setSourceLanguage, setTargetLanguage])
 
-  // Initialize services if they load asynchronously
-  const isServicesInitializedRef = useRef(false)
   useEffect(() => {
-    // Only initialize if selectedServices is empty and availableServices has items
-    // This prevents overwriting user selection if they navigate away and back (if atoms persist)
-    // But since atoms are memory-only for now, it mostly acts as initial load.
-    if (!isServicesInitializedRef.current && availableServices.length > 0) {
-      if (selectedServices.length === 0) {
+    if (!isInitRef.current.services && availableServices.length > 0) {
+      if (selectedServices.length === 0)
         setSelectedServices(availableServices)
-      }
-      isServicesInitializedRef.current = true
+      isInitRef.current.services = true
     }
   }, [availableServices, selectedServices.length, setSelectedServices])
 
-  // Helper to update a single translation result
-  const updateResult = useCallback((id: string, updates: Partial<TranslationResult>) => {
-    setTranslationResults(prev =>
-      prev.map(result => (result.id === id ? { ...result, ...updates } : result)),
-    )
-  }, [setTranslationResults])
-
-  const handleLanguageExchange = useCallback(() => {
-    setSourceLanguage((prevSource) => {
-      const currentTarget = targetLanguage
-      setTargetLanguage(prevSource)
-      return currentTarget
-    })
-  }, [targetLanguage, setSourceLanguage, setTargetLanguage])
-
-  // Helper to translate specific services
+  // Core Translation Logic
   const translateServices = useCallback(async (services: ServiceInfo[]) => {
-    if (!inputText.trim() || services.length === 0) {
+    if (!inputText.trim() || services.length === 0)
       return
+
+    setTranslationResults((prev) => {
+      const targetIds = new Set(services.map(s => s.id))
+      const existing = prev.filter(r => !targetIds.has(r.id))
+      const newEntries = services.map(s => ({
+        id: s.id,
+        name: s.name,
+        provider: s.provider,
+        isLoading: true,
+        text: prev.find(r => r.id === s.id)?.text,
+      }))
+      return [...existing, ...newEntries]
+    })
+
+    const updateResult = (id: string, updates: Partial<TranslationResult>) => {
+      setTranslationResults(prev => prev.map(r => (r.id === id ? { ...r, ...updates } : r)))
     }
 
-    // Add loading state while preserving existing text
-    setTranslationResults((prev) => {
-      const existingIds = new Set(services.map(s => s.id))
-      const existingResults = prev.filter(r => !existingIds.has(r.id))
-
-      const updatedResults: TranslationResult[] = services.map((service) => {
-        const existing = prev.find(r => r.id === service.id)
-        return {
-          id: service.id,
-          name: service.name,
-          provider: service.provider,
-          isLoading: true,
-          text: existing ? existing.text : undefined,
-        }
-      })
-
-      return [...existingResults, ...updatedResults]
-    })
-
-    // Translation API calls
-    const translationPromises = services.map(async (service) => {
+    const runTranslation = async (service: ServiceInfo) => {
       try {
         const providerConfig = getProviderConfigById(providersConfig, service.id)
-        if (!providerConfig) {
+        if (!providerConfig)
           throw new Error(`Provider config not found for ${service.id}`)
-        }
 
-        const langConfig = {
+        const text = await executeTranslate(inputText, {
           sourceCode: sourceLanguage,
           targetCode: targetLanguage,
           level: language.level,
-        }
+        }, providerConfig)
 
-        const translatedText = await executeTranslate(inputText, langConfig, providerConfig)
-        updateResult(service.id, { text: translatedText, isLoading: false, error: undefined })
+        updateResult(service.id, { text, isLoading: false, error: undefined })
       }
       catch (error) {
         updateResult(service.id, {
@@ -115,72 +87,58 @@ export function useTranslation() {
           text: undefined,
         })
       }
-    })
-
-    await Promise.allSettled(translationPromises)
-  }, [inputText, sourceLanguage, targetLanguage, language.level, providersConfig, updateResult, setTranslationResults])
-
-  const handleTranslate = useCallback(async () => {
-    if (!inputText.trim() || selectedServices.length === 0) {
-      return
     }
-    await translateServices(selectedServices)
-  }, [inputText, selectedServices, translateServices])
 
-  // Explicitly handle service toggle (add/remove)
+    await Promise.allSettled(services.map(runTranslation))
+  }, [inputText, sourceLanguage, targetLanguage, language.level, providersConfig, setTranslationResults])
+
+  // Handlers
+  const handleTranslate = useCallback(async () => {
+    await translateServices(selectedServices)
+  }, [selectedServices, translateServices])
+
+  const handleLanguageExchange = useCallback(() => {
+    setSourceLanguage(targetLanguage)
+    setTargetLanguage(sourceLanguage)
+  }, [sourceLanguage, targetLanguage, setSourceLanguage, setTargetLanguage])
+
   const handleToggleService = useCallback((serviceId: string, enabled: boolean) => {
     if (enabled) {
       const service = availableServices.find(s => s.id === serviceId)
       if (service) {
         setSelectedServices(prev => [...prev, service])
-        // Trigger translation immediately for the new service
-        if (inputText.trim()) {
+        if (inputText.trim())
           void translateServices([service])
-        }
       }
     }
     else {
       setSelectedServices(prev => prev.filter(s => s.id !== serviceId))
-      // Remove result immediately
       setTranslationResults(prev => prev.filter(r => r.id !== serviceId))
     }
   }, [availableServices, inputText, translateServices, setSelectedServices, setTranslationResults])
 
-  // Auto-retranslate when language changes
+  const handleInputChange = useCallback((value: string) => {
+    setInputText(value)
+    if (!value.trim())
+      setTranslationResults([])
+  }, [setInputText, setTranslationResults])
+
+  // Auto-translate Logic
   const languageKey = `${sourceLanguage}-${targetLanguage}`
-  const prevLanguageKeyRef = useRef(languageKey)
+  const prevLangKeyRef = useRef(languageKey)
 
   const onAutoTranslate = useEffectEvent(() => {
-    if (inputText.trim() && selectedServices.length > 0 && !isTranslating && translationResults.length > 0) {
+    if (inputText.trim() && selectedServices.length > 0 && translationResults.length > 0) {
       void handleTranslate()
     }
   })
 
   useEffect(() => {
-    // Only trigger logic if language key has changed
-    if (prevLanguageKeyRef.current === languageKey) {
-      return
+    if (prevLangKeyRef.current !== languageKey) {
+      prevLangKeyRef.current = languageKey
+      onAutoTranslate()
     }
-    prevLanguageKeyRef.current = languageKey
-
-    onAutoTranslate()
   }, [languageKey])
-
-  const handleInputChange = useCallback((value: string) => {
-    setInputText(value)
-    if (!value.trim()) {
-      setTranslationResults([])
-    }
-  }, [setInputText, setTranslationResults])
-
-  const handleCopyText = useCallback((text: string) => {
-    void navigator.clipboard.writeText(text)
-    toast.success('Translation copied to clipboard!')
-  }, [])
-
-  const handleRemoveService = useCallback((id: string) => {
-    handleToggleService(id, false)
-  }, [handleToggleService])
 
   return {
     sourceLanguage,
@@ -194,8 +152,11 @@ export function useTranslation() {
     translationResults,
     handleTranslate,
     handleLanguageExchange,
-    handleCopyText,
-    handleRemoveService,
-    handleToggleService, // Export new handler
+    handleCopyText: useCallback((text: string) => {
+      void navigator.clipboard.writeText(text)
+      toast.success('Translation copied to clipboard!')
+    }, []),
+    handleRemoveService: useCallback((id: string) => handleToggleService(id, false), [handleToggleService]),
+    handleToggleService,
   }
 }
