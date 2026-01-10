@@ -72,12 +72,12 @@ export function TranslationCard({ result, onCopy, onRemove }: TranslationCardPro
         <div className="p-3">
           {result.error
             ? (
-                <div className="py-2">
+                <div>
                   <div className="flex items-center space-x-2 text-destructive mb-1">
                     <Icon icon="tabler:alert-circle" className="h-4 w-4" />
                     <span className="text-sm font-medium">Translation Failed</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">{result.error}</p>
+                  <p className="text-sm text-muted-foreground">{result.error}</p>
                 </div>
               )
             : (
