@@ -44,11 +44,16 @@ export function useTranslation() {
     }
   }, [availableServices, selectedServices.length, setSelectedServices])
 
+  // Race condition handling
+  const activeRequestIdsRef = useRef<Record<string, number>>({})
+  const requestCounterRef = useRef(0)
+
   // Core Translation Logic
   const translateServices = useCallback(async (services: ServiceInfo[]) => {
     if (!inputText.trim() || services.length === 0)
       return
 
+    // Optimistic UI update
     setTranslationResults((prev) => {
       const targetIds = new Set(services.map(s => s.id))
       const existing = prev.filter(r => !targetIds.has(r.id))
@@ -67,6 +72,9 @@ export function useTranslation() {
     }
 
     const runTranslation = async (service: ServiceInfo) => {
+      const requestId = ++requestCounterRef.current
+      activeRequestIdsRef.current[service.id] = requestId
+
       try {
         const providerConfig = getProviderConfigById(providersConfig, service.id)
         if (!providerConfig)
@@ -78,9 +86,16 @@ export function useTranslation() {
           level: language.level,
         }, providerConfig)
 
+        // if a newer request started for this service, ignore this result
+        if (activeRequestIdsRef.current[service.id] !== requestId)
+          return
+
         updateResult(service.id, { text, isLoading: false, error: undefined })
       }
       catch (error) {
+        if (activeRequestIdsRef.current[service.id] !== requestId)
+          return
+
         updateResult(service.id, {
           error: error instanceof Error ? error.message : 'Translation failed',
           isLoading: false,
