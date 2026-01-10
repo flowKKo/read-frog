@@ -1,22 +1,23 @@
 import { Icon } from '@iconify/react'
+import { useAtom, useSetAtom } from 'jotai'
 import { useEffect, useRef, useState } from 'react'
+import { inputTextAtom, translationResultsAtom } from '../atoms'
 
 interface TextInputProps {
-  value: string
-  onChange: (value: string) => void
   onTranslate: () => void
   placeholder?: string
   disabled?: boolean
 }
 
 export function TextInput({
-  value,
-  onChange,
   onTranslate,
   placeholder = 'Enter text to translate...',
   disabled = false,
 }: TextInputProps) {
+  const [value, setValue] = useAtom(inputTextAtom)
+  const setTranslationResults = useSetAtom(translationResultsAtom)
   const [isFocused, setIsFocused] = useState(false)
+
   // Keep track of the latest callback without triggering effects
   const onTranslateRef = useRef(onTranslate)
 
@@ -36,7 +37,15 @@ export function TextInput({
   }, [value]) // Only trigger when value changes
 
   const handleClear = () => {
-    onChange('')
+    setValue('')
+    setTranslationResults([])
+  }
+
+  const handleChange = (newValue: string) => {
+    setValue(newValue)
+    if (!newValue.trim()) {
+      setTranslationResults([])
+    }
   }
 
   return (
@@ -44,7 +53,7 @@ export function TextInput({
       <div className={`relative border rounded-xl ${isFocused ? 'ring-1 ring-primary/30 border-primary/50' : 'border-border hover:border-border/80'}`}>
         <textarea
           value={value}
-          onChange={e => onChange(e.target.value)}
+          onChange={e => handleChange(e.target.value)}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder={placeholder}

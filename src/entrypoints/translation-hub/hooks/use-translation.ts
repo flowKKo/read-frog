@@ -1,11 +1,17 @@
-import type { LangCodeISO6393 } from '@read-frog/definitions'
 import type { ServiceInfo, TranslationResult } from '../types'
-import { useAtomValue } from 'jotai'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useAtom, useAtomValue } from 'jotai'
+import { useCallback, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 import { configFieldsAtomMap } from '@/utils/atoms/config'
 import { getProviderConfigById } from '@/utils/config/helpers'
 import { executeTranslate } from '@/utils/host/translate/execute-translate'
+import {
+  inputTextAtom,
+  selectedServicesAtom,
+  sourceLanguageAtom,
+  targetLanguageAtom,
+  translationResultsAtom,
+} from '../atoms'
 import { useAvailableServices } from './use-available-services'
 
 export function useTranslation() {
@@ -13,30 +19,44 @@ export function useTranslation() {
   const providersConfig = useAtomValue(configFieldsAtomMap.providersConfig)
   const { services: availableServices } = useAvailableServices()
 
-  const [sourceLanguage, setSourceLanguage] = useState<LangCodeISO6393>(
-    language.sourceCode === 'auto' ? 'eng' : language.sourceCode,
-  )
-  const [targetLanguage, setTargetLanguage] = useState<LangCodeISO6393>(language.targetCode)
-  const [inputText, setInputText] = useState('')
-  const [selectedServices, setSelectedServices] = useState<ServiceInfo[]>(availableServices)
-  const [translationResults, setTranslationResults] = useState<TranslationResult[]>([])
+  const [sourceLanguage, setSourceLanguage] = useAtom(sourceLanguageAtom)
+  const [targetLanguage, setTargetLanguage] = useAtom(targetLanguageAtom)
+  const [inputText, setInputText] = useAtom(inputTextAtom)
+  const [selectedServices, setSelectedServices] = useAtom(selectedServicesAtom)
+  const [translationResults, setTranslationResults] = useAtom(translationResultsAtom)
+
   const isTranslating = translationResults.some(r => r.isLoading)
 
-  // Initialize services if they load asynchronously
-  const isInitializedRef = useRef(availableServices.length > 0)
+  // Initialize languages from config
+  const isLangInitializedRef = useRef(false)
   useEffect(() => {
-    if (!isInitializedRef.current && availableServices.length > 0) {
-      setSelectedServices(availableServices)
-      isInitializedRef.current = true
+    if (!isLangInitializedRef.current && language) {
+      setSourceLanguage(language.sourceCode === 'auto' ? 'eng' : language.sourceCode)
+      setTargetLanguage(language.targetCode)
+      isLangInitializedRef.current = true
     }
-  }, [availableServices])
+  }, [language, setSourceLanguage, setTargetLanguage])
+
+  // Initialize services if they load asynchronously
+  const isServicesInitializedRef = useRef(false)
+  useEffect(() => {
+    // Only initialize if selectedServices is empty and availableServices has items
+    // This prevents overwriting user selection if they navigate away and back (if atoms persist)
+    // But since atoms are memory-only for now, it mostly acts as initial load.
+    if (!isServicesInitializedRef.current && availableServices.length > 0) {
+      if (selectedServices.length === 0) {
+        setSelectedServices(availableServices)
+      }
+      isServicesInitializedRef.current = true
+    }
+  }, [availableServices, selectedServices.length, setSelectedServices])
 
   // Helper to update a single translation result
   const updateResult = useCallback((id: string, updates: Partial<TranslationResult>) => {
     setTranslationResults(prev =>
       prev.map(result => (result.id === id ? { ...result, ...updates } : result)),
     )
-  }, [])
+  }, [setTranslationResults])
 
   const handleLanguageExchange = useCallback(() => {
     setSourceLanguage((prevSource) => {
@@ -44,7 +64,7 @@ export function useTranslation() {
       setTargetLanguage(prevSource)
       return currentTarget
     })
-  }, [targetLanguage])
+  }, [targetLanguage, setSourceLanguage, setTargetLanguage])
 
   // Helper to translate specific services
   const translateServices = useCallback(async (services: ServiceInfo[]) => {
@@ -98,7 +118,7 @@ export function useTranslation() {
     })
 
     await Promise.allSettled(translationPromises)
-  }, [inputText, sourceLanguage, targetLanguage, language.level, providersConfig, updateResult])
+  }, [inputText, sourceLanguage, targetLanguage, language.level, providersConfig, updateResult, setTranslationResults])
 
   const handleTranslate = useCallback(async () => {
     if (!inputText.trim() || selectedServices.length === 0) {
@@ -124,7 +144,7 @@ export function useTranslation() {
       // Remove result immediately
       setTranslationResults(prev => prev.filter(r => r.id !== serviceId))
     }
-  }, [availableServices, inputText, translateServices])
+  }, [availableServices, inputText, translateServices, setSelectedServices, setTranslationResults])
 
   // Auto-retranslate when language changes
   const languageKey = `${sourceLanguage}-${targetLanguage}`
@@ -147,7 +167,7 @@ export function useTranslation() {
     if (!value.trim()) {
       setTranslationResults([])
     }
-  }, [])
+  }, [setInputText, setTranslationResults])
 
   const handleCopyText = useCallback((text: string) => {
     void navigator.clipboard.writeText(text)

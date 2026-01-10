@@ -1,6 +1,6 @@
-import type { ServiceInfo } from '../types'
 import { browser } from '#imports'
 import { Icon } from '@iconify/react'
+import { useAtomValue } from 'jotai'
 import { useMemo } from 'react'
 import { useTheme } from '@/components/providers/theme-provider'
 import { Button } from '@/components/shadcn/button'
@@ -9,19 +9,19 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/shadcn/dropdown-menu'
+import { selectedServicesAtom } from '../atoms'
 import { useAvailableServices } from '../hooks/use-available-services'
 import { ServiceSection } from './service-list-item'
 
 interface TranslationServiceDropdownProps {
-  selectedServices: ServiceInfo[]
   onToggleService: (serviceId: string, enabled: boolean) => void
 }
 
 export function TranslationServiceDropdown({
-  selectedServices,
   onToggleService,
 }: TranslationServiceDropdownProps) {
   const { theme = 'light' } = useTheme()
+  const selectedServices = useAtomValue(selectedServicesAtom)
   const { services: availableServices, error: hasError } = useAvailableServices()
 
   // Keep this set for fast lookup of selected state

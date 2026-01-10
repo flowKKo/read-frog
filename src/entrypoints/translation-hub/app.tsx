@@ -6,14 +6,6 @@ import { useTranslation } from './hooks/use-translation'
 
 export default function App() {
   const {
-    sourceLanguage,
-    setSourceLanguage,
-    targetLanguage,
-    setTargetLanguage,
-    inputText,
-    handleInputChange,
-    selectedServices,
-    translationResults,
     handleTranslate,
     handleLanguageExchange,
     handleCopyText,
@@ -36,16 +28,11 @@ export default function App() {
               {/* Row 1: Controls */}
               <div className="order-1">
                 <LanguageControlPanel
-                  sourceLanguage={sourceLanguage}
-                  targetLanguage={targetLanguage}
-                  onSourceLanguageChange={setSourceLanguage}
-                  onTargetLanguageChange={setTargetLanguage}
                   onLanguageExchange={handleLanguageExchange}
                 />
               </div>
               <div className="order-3 lg:order-2 flex justify-end lg:items-end lg:h-full">
                 <TranslationServiceDropdown
-                  selectedServices={selectedServices}
                   onToggleService={handleToggleService}
                 />
               </div>
@@ -53,16 +40,12 @@ export default function App() {
               {/* Row 2: Content */}
               <div className="order-2 lg:order-3">
                 <TextInput
-                  value={inputText}
-                  onChange={handleInputChange}
                   onTranslate={handleTranslate}
                   placeholder="Enter the text you want to translate..."
                 />
               </div>
               <div className="order-4">
                 <TranslationPanel
-                  results={translationResults}
-                  selectedServices={selectedServices}
                   onCopy={handleCopyText}
                   onRemove={handleRemoveService}
                 />

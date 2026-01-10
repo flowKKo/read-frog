@@ -1,15 +1,17 @@
-import type { ServiceInfo, TranslationResult } from '../types'
 import { Icon } from '@iconify/react'
+import { useAtomValue } from 'jotai'
+import { selectedServicesAtom, translationResultsAtom } from '../atoms'
 import { TranslationCard } from './translation-card'
 
 interface TranslationPanelProps {
-  results: TranslationResult[]
-  selectedServices: ServiceInfo[]
   onCopy: (text: string) => void
   onRemove: (id: string) => void
 }
 
-export function TranslationPanel({ results, selectedServices, onCopy, onRemove }: TranslationPanelProps) {
+export function TranslationPanel({ onCopy, onRemove }: TranslationPanelProps) {
+  const results = useAtomValue(translationResultsAtom)
+  const selectedServices = useAtomValue(selectedServicesAtom)
+
   // Create cards for all selected services, showing empty state if no result yet
   const displayCards = selectedServices.map(service =>
     results.find(r => r.id === service.id) ?? {

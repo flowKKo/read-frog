@@ -1,28 +1,24 @@
-import type { LangCodeISO6393 } from '@read-frog/definitions'
 import { Icon } from '@iconify/react'
+import { useAtom } from 'jotai'
 import { Button } from '@/components/shadcn/button'
+import { sourceLanguageAtom, targetLanguageAtom } from '../atoms'
 import { SearchableLanguageSelector } from './searchable-language-selector'
 
 interface LanguageControlPanelProps {
-  sourceLanguage: LangCodeISO6393
-  targetLanguage: LangCodeISO6393
-  onSourceLanguageChange: (langCode: LangCodeISO6393) => void
-  onTargetLanguageChange: (langCode: LangCodeISO6393) => void
   onLanguageExchange: () => void
 }
 
 export function LanguageControlPanel({
-  sourceLanguage,
-  targetLanguage,
-  onSourceLanguageChange,
-  onTargetLanguageChange,
   onLanguageExchange,
 }: LanguageControlPanelProps) {
+  const [sourceLanguage, setSourceLanguage] = useAtom(sourceLanguageAtom)
+  const [targetLanguage, setTargetLanguage] = useAtom(targetLanguageAtom)
+
   return (
     <div className="flex items-center gap-3">
       <SearchableLanguageSelector
         value={sourceLanguage}
-        onValueChange={onSourceLanguageChange}
+        onValueChange={setSourceLanguage}
         label="Source Language"
       />
 
@@ -39,7 +35,7 @@ export function LanguageControlPanel({
 
       <SearchableLanguageSelector
         value={targetLanguage}
-        onValueChange={onTargetLanguageChange}
+        onValueChange={setTargetLanguage}
         label="Target Language"
       />
     </div>
