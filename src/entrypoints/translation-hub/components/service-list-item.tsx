@@ -17,7 +17,15 @@ export function ServiceListItem({ service, isSelected, theme, onToggle }: Servic
   return (
     <div
       className="flex items-center space-x-2 p-2 rounded hover:bg-primary/5 cursor-pointer"
+      role="button"
+      tabIndex={0}
       onClick={() => onToggle(service.id, !isSelected)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onToggle(service.id, !isSelected)
+        }
+      }}
     >
       <Checkbox
         checked={isSelected}

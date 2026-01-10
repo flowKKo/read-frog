@@ -97,7 +97,7 @@ export function useTranslation() {
       }
     })
 
-    void Promise.allSettled(translationPromises)
+    await Promise.allSettled(translationPromises)
   }, [inputText, sourceLanguage, targetLanguage, language.level, providersConfig, updateResult])
 
   const handleTranslate = useCallback(async () => {

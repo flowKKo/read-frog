@@ -23,9 +23,9 @@ function highlightSearchText(text: string, search: string) {
   const regex = new RegExp(`(${search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
   const parts = text.split(regex)
 
-  return parts.map((part) => {
+  return parts.map((part, index) => {
     const isHighlighted = regex.test(part)
-    const key = isHighlighted ? `highlight-${part}-${search}` : `text-${part}-${search}`
+    const key = `${index}-${isHighlighted ? 'highlight' : 'text'}`
 
     return isHighlighted
       ? <mark key={key} className="bg-primary/20 text-primary">{part}</mark>

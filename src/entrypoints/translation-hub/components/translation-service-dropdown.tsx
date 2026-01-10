@@ -69,19 +69,24 @@ export function TranslationServiceDropdown({
             </div>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-80" align="end">
+        <DropdownMenuContent
+          className="w-80"
+          align="end"
+          onCloseAutoFocus={e => e.preventDefault()}
+        >
           <div className="p-2">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-foreground">
                 Select Translation Services
               </span>
-              <span
+              <button
+                type="button"
                 onClick={handleConfigureAPI}
-                className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary cursor-pointer hover:underline"
+                className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary cursor-pointer hover:underline bg-transparent border-none p-0"
               >
                 <Icon icon="tabler:settings" className="h-3.5 w-3.5" />
                 Configure API
-              </span>
+              </button>
             </div>
             <div className="max-h-80 overflow-y-auto">
               {availableServices.length > 0

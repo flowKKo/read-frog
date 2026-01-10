@@ -5,9 +5,14 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/shadcn/too
 
 export function HubButton() {
   const handleClick = async () => {
-    await browser.tabs.create({
-      url: browser.runtime.getURL('/translation-hub.html'),
-    })
+    try {
+      await browser.tabs.create({
+        url: browser.runtime.getURL('/translation-hub.html'),
+      })
+    }
+    catch (error) {
+      console.error('Error opening translation hub:', error)
+    }
   }
 
   return (
