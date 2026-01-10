@@ -1,17 +1,17 @@
 import type { ServiceInfo } from '../types'
-import type { Theme } from '@/components/providers/theme-provider'
 import ProviderIcon from '@/components/provider-icon'
+import { useTheme } from '@/components/providers/theme-provider'
 import { Checkbox } from '@/components/shadcn/checkbox'
 import { PROVIDER_ITEMS } from '@/utils/constants/providers'
 
 interface ServiceListItemProps {
   service: ServiceInfo
   isSelected: boolean
-  theme: Theme
   onToggle: (id: string, enabled: boolean) => void
 }
 
-export function ServiceListItem({ service, isSelected, theme, onToggle }: ServiceListItemProps) {
+export function ServiceListItem({ service, isSelected, onToggle }: ServiceListItemProps) {
+  const { theme = 'light' } = useTheme()
   const providerItem = PROVIDER_ITEMS[service.provider as keyof typeof PROVIDER_ITEMS]
 
   return (
@@ -58,11 +58,10 @@ interface ServiceSectionProps {
   title: string
   services: ServiceInfo[]
   selectedIds: Set<string>
-  theme: Theme
   onToggle: (id: string, enabled: boolean) => void
 }
 
-export function ServiceSection({ title, services, selectedIds, theme, onToggle }: ServiceSectionProps) {
+export function ServiceSection({ title, services, selectedIds, onToggle }: ServiceSectionProps) {
   if (services.length === 0) {
     return null
   }
@@ -78,7 +77,6 @@ export function ServiceSection({ title, services, selectedIds, theme, onToggle }
             key={service.id}
             service={service}
             isSelected={selectedIds.has(service.id)}
-            theme={theme}
             onToggle={onToggle}
           />
         ))}

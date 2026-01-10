@@ -2,7 +2,6 @@ import { browser } from '#imports'
 import { Icon } from '@iconify/react'
 import { useAtomValue } from 'jotai'
 import { useMemo } from 'react'
-import { useTheme } from '@/components/providers/theme-provider'
 import { Button } from '@/components/shadcn/button'
 import {
   DropdownMenu,
@@ -20,7 +19,6 @@ interface TranslationServiceDropdownProps {
 export function TranslationServiceDropdown({
   onToggleService,
 }: TranslationServiceDropdownProps) {
-  const { theme = 'light' } = useTheme()
   const selectedServices = useAtomValue(selectedServicesAtom)
   const { services: availableServices, error: hasError } = useAvailableServices()
 
@@ -96,14 +94,12 @@ export function TranslationServiceDropdown({
                         title="Normal Translator"
                         services={normalServices}
                         selectedIds={selectedIds}
-                        theme={theme}
                         onToggle={onToggleService}
                       />
                       <ServiceSection
                         title="AI Translator"
                         services={aiServices}
                         selectedIds={selectedIds}
-                        theme={theme}
                         onToggle={onToggleService}
                       />
                     </>
