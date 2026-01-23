@@ -1,29 +1,37 @@
-import { browser } from '#imports'
-import { Icon } from '@iconify/react'
+import { browser, i18n } from '#imports'
+import { IconSettings } from '@tabler/icons-react'
 import { useAtomValue } from 'jotai'
 import { useMemo } from 'react'
-import { Button } from '@/components/shadcn/button'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/shadcn/dropdown-menu'
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/base-ui/select'
+import ProviderIcon from '@/components/provider-icon'
+import { useTheme } from '@/components/providers/theme-provider'
+import { Button } from '@/components/shadcn/button'
+import { configFieldsAtomMap } from '@/utils/atoms/config'
+import { filterEnabledProvidersConfig, getLLMTranslateProvidersConfig, getNonAPIProvidersConfig, getPureAPIProvidersConfig } from '@/utils/config/helpers'
+import { PROVIDER_ITEMS } from '@/utils/constants/providers'
 import { selectedServicesAtom } from '../atoms'
-import { useAvailableServices } from '../hooks/use-available-services'
-import { ServiceSection } from './service-list-item'
 
 interface TranslationServiceDropdownProps {
-  onToggleService: (serviceId: string, enabled: boolean) => void
+  onServicesChange: (selectedIds: string[]) => void
 }
 
 export function TranslationServiceDropdown({
-  onToggleService,
+  onServicesChange,
 }: TranslationServiceDropdownProps) {
+  const { theme = 'light' } = useTheme()
   const selectedServices = useAtomValue(selectedServicesAtom)
-  const { services: availableServices, error: hasError } = useAvailableServices()
+  const providersConfig = useAtomValue(configFieldsAtomMap.providersConfig)
+  const filteredProvidersConfig = filterEnabledProvidersConfig(providersConfig)
 
-  // Keep this set for fast lookup of selected state
-  const selectedIds = useMemo(() => new Set(selectedServices.map(s => s.id)), [selectedServices])
+  const selectedIds = useMemo(() => selectedServices.map(s => s.id), [selectedServices])
 
   const handleConfigureAPI = async () => {
     try {
@@ -36,83 +44,61 @@ export function TranslationServiceDropdown({
     }
   }
 
-  const enabledCount = selectedServices.length
-  const normalServices = availableServices.filter(s => s.type === 'normal')
-  const aiServices = availableServices.filter(s => s.type === 'ai')
-
-  if (hasError) {
-    return (
-      <div className="flex items-end justify-end">
-        <Button variant="outline" disabled className="justify-between min-w-52 h-9">
-          <span>Translation Services (Error)</span>
-          <Icon icon="tabler:exclamation-circle" className="h-4 w-4" />
-        </Button>
-      </div>
-    )
-  }
+  const aiProviders = getLLMTranslateProvidersConfig(filteredProvidersConfig)
+  const nonAPIProviders = getNonAPIProvidersConfig(filteredProvidersConfig)
+  const pureAPIProviders = getPureAPIProvidersConfig(filteredProvidersConfig)
 
   return (
-    <div className="flex items-end justify-end">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="justify-between min-w-52 h-9">
-            <span>Translation Services</span>
-            <div className="flex items-center gap-2">
-              {enabledCount > 0 && (
-                <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
-                  {enabledCount}
+    <div className="flex items-center gap-2">
+      <Select
+        multiple
+        value={selectedIds}
+        onValueChange={onServicesChange}
+      >
+        <SelectTrigger className="min-w-52">
+          <SelectValue placeholder={i18n.t('translateService.selectServices')}>
+            {selectedServices.length > 0 && (
+              <div className="flex items-center gap-2">
+                <span>{i18n.t('translateService.translationProviders')}</span>
+                <span className="text-xs bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full">
+                  {selectedServices.length}
                 </span>
-              )}
-              <Icon icon="tabler:chevron-down" className="h-4 w-4" />
-            </div>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          className="w-80"
-          align="end"
-          onCloseAutoFocus={e => e.preventDefault()}
-        >
-          <div className="p-2">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-foreground">
-                Select Translation Services
-              </span>
-              <button
-                type="button"
-                onClick={handleConfigureAPI}
-                className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary cursor-pointer hover:underline bg-transparent border-none p-0"
-              >
-                <Icon icon="tabler:settings" className="h-3.5 w-3.5" />
-                Configure API
-              </button>
-            </div>
-            <div className="max-h-80 overflow-y-auto">
-              {availableServices.length > 0
-                ? (
-                    <>
-                      <ServiceSection
-                        title="Normal Translator"
-                        services={normalServices}
-                        selectedIds={selectedIds}
-                        onToggle={onToggleService}
-                      />
-                      <ServiceSection
-                        title="AI Translator"
-                        services={aiServices}
-                        selectedIds={selectedIds}
-                        onToggle={onToggleService}
-                      />
-                    </>
-                  )
-                : (
-                    <div className="text-center py-4 text-muted-foreground">
-                      <p className="text-sm">No translation services available</p>
-                    </div>
-                  )}
-            </div>
-          </div>
-        </DropdownMenuContent>
-      </DropdownMenu>
+              </div>
+            )}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          {aiProviders.length > 0 && (
+            <SelectGroup>
+              <SelectLabel>{i18n.t('translateService.aiTranslator')}</SelectLabel>
+              {aiProviders.map(({ id, name, provider }) => (
+                <SelectItem key={id} value={id}>
+                  <ProviderIcon logo={PROVIDER_ITEMS[provider].logo(theme)} name={name} size="sm" />
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          )}
+          {(nonAPIProviders.length > 0 || pureAPIProviders.length > 0) && (
+            <SelectGroup>
+              <SelectLabel>{i18n.t('translateService.normalTranslator')}</SelectLabel>
+              {nonAPIProviders.map(({ id, name, provider }) => (
+                <SelectItem key={id} value={id}>
+                  <ProviderIcon logo={PROVIDER_ITEMS[provider].logo(theme)} name={name} size="sm" />
+                </SelectItem>
+              ))}
+              {pureAPIProviders.map(({ id, name, provider }) => (
+                <SelectItem key={id} value={id}>
+                  <ProviderIcon logo={PROVIDER_ITEMS[provider].logo(theme)} name={name} size="sm" />
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          )}
+        </SelectContent>
+      </Select>
+
+      <Button variant="outline" size="icon-lg" onClick={handleConfigureAPI} title={i18n.t('translateService.configureAPI')}>
+        <IconSettings className="h-4 w-4" />
+      </Button>
     </div>
   )
 }

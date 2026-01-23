@@ -598,6 +598,9 @@ translateService:
   description: Chỉ để dịch trang web
   normalTranslator: Trình dịch thông thường
   aiTranslator: Trình dịch AI
+  selectServices: Chọn dịch vụ
+  translationProviders: Dịch vụ dịch thuật
+  configureAPI: Cấu hình API
 translatePrompt:
   title: Kiểu dịch AI
   description: Chọn một Prompt để sử dụng trong quá trình dịch. Thêm hoặc sửa đổi Prompt tùy chỉnh trên trang tùy chọn.

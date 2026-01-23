@@ -598,6 +598,9 @@ translateService:
   description: Только для перевода веб-страницы
   normalTranslator: Обычный переводчик
   aiTranslator: ИИ-переводчик
+  selectServices: Выберите сервисы
+  translationProviders: Сервисы перевода
+  configureAPI: Настроить API
 translatePrompt:
   title: Стиль ИИ-перевода
   description: Выберите промпт для использования во время перевода. Добавляйте или изменяйте пользовательские промпты на странице настроек.

@@ -599,6 +599,9 @@ translateService:
   description: 僅用於翻譯網頁內容
   normalTranslator: 普通翻譯
   aiTranslator: AI 翻譯
+  selectServices: 選擇服務
+  translationProviders: 翻譯服務
+  configureAPI: 設定 API
 translatePrompt:
   title: AI 翻譯風格
   description: 選擇在翻譯時使用的 Prompt。可在選項頁面新增或修改自訂 Prompt

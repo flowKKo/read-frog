@@ -13,7 +13,6 @@ import { getLocalConfig } from '@/utils/config/storage'
 import { DEFAULT_CONFIG } from '@/utils/constants/config'
 import { queryClient } from '@/utils/tanstack-query'
 import App from './app'
-import '@/assets/styles/text-small.css'
 import '@/assets/styles/theme.css'
 
 interface HydrateAtomsProps {

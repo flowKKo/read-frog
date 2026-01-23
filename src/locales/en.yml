@@ -600,6 +600,9 @@ translateService:
   description: For translate the webpage only
   normalTranslator: Normal Translator
   aiTranslator: AI Translator
+  selectServices: Select services
+  translationProviders: Translation Providers
+  configureAPI: Configure API
 translatePrompt:
   title: AI Translation Style
   description: Select a Prompt to use during translation. Add or modify custom Prompts on the options page.

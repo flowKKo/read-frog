@@ -1,9 +1,9 @@
 import type { ServiceInfo, TranslationResult } from '../types'
 import { useAtom, useAtomValue } from 'jotai'
-import { useCallback, useEffect, useEffectEvent, useRef } from 'react'
+import { useCallback, useEffect, useEffectEvent, useMemo, useRef } from 'react'
 import { toast } from 'sonner'
 import { configFieldsAtomMap } from '@/utils/atoms/config'
-import { getProviderConfigById } from '@/utils/config/helpers'
+import { filterEnabledProvidersConfig, getProviderConfigById } from '@/utils/config/helpers'
 import { executeTranslate } from '@/utils/host/translate/execute-translate'
 import {
   inputTextAtom,
@@ -12,12 +12,11 @@ import {
   targetLanguageAtom,
   translationResultsAtom,
 } from '../atoms'
-import { useAvailableServices } from './use-available-services'
 
 export function useTranslation() {
   const language = useAtomValue(configFieldsAtomMap.language)
   const providersConfig = useAtomValue(configFieldsAtomMap.providersConfig)
-  const { services: availableServices } = useAvailableServices()
+  const enabledProviders = useMemo(() => filterEnabledProvidersConfig(providersConfig), [providersConfig])
 
   const [sourceLanguage, setSourceLanguage] = useAtom(sourceLanguageAtom)
   const [targetLanguage, setTargetLanguage] = useAtom(targetLanguageAtom)
@@ -37,12 +36,20 @@ export function useTranslation() {
   }, [language, setSourceLanguage, setTargetLanguage])
 
   useEffect(() => {
-    if (!isInitRef.current.services && availableServices.length > 0) {
-      if (selectedServices.length === 0)
-        setSelectedServices(availableServices)
+    if (!isInitRef.current.services && enabledProviders.length > 0) {
+      if (selectedServices.length === 0) {
+        // Initialize with all enabled providers as selected
+        const services: ServiceInfo[] = enabledProviders.map(p => ({
+          id: p.id,
+          name: p.name,
+          provider: p.provider,
+          type: 'ai', // Default type, will be refined based on actual provider type
+        }))
+        setSelectedServices(services)
+      }
       isInitRef.current.services = true
     }
-  }, [availableServices, selectedServices.length, setSelectedServices])
+  }, [enabledProviders, selectedServices.length, setSelectedServices])
 
   // Race condition handling
   const activeRequestIdsRef = useRef<Record<string, number>>({})
@@ -117,20 +124,44 @@ export function useTranslation() {
     setTargetLanguage(sourceLanguage)
   }, [sourceLanguage, targetLanguage, setSourceLanguage, setTargetLanguage])
 
-  const handleToggleService = useCallback((serviceId: string, enabled: boolean) => {
-    if (enabled) {
-      const service = availableServices.find(s => s.id === serviceId)
-      if (service) {
-        setSelectedServices(prev => [...prev, service])
-        if (inputText.trim())
-          void translateServices([service])
+  // New handler for multi-select onValueChange
+  const handleServicesChange = useCallback((selectedIds: string[]) => {
+    const newSelectedServices: ServiceInfo[] = []
+    const servicesToTranslate: ServiceInfo[] = []
+
+    for (const id of selectedIds) {
+      // Check if already selected
+      const existing = selectedServices.find(s => s.id === id)
+      if (existing) {
+        newSelectedServices.push(existing)
+      }
+      else {
+        // Find in enabled providers and add as new
+        const provider = enabledProviders.find(p => p.id === id)
+        if (provider) {
+          const newService: ServiceInfo = {
+            id: provider.id,
+            name: provider.name,
+            provider: provider.provider,
+            type: 'ai', // Default type
+          }
+          newSelectedServices.push(newService)
+          servicesToTranslate.push(newService)
+        }
       }
     }
-    else {
-      setSelectedServices(prev => prev.filter(s => s.id !== serviceId))
-      setTranslationResults(prev => prev.filter(r => r.id !== serviceId))
+
+    setSelectedServices(newSelectedServices)
+
+    // Remove results for deselected services
+    const selectedIdSet = new Set(selectedIds)
+    setTranslationResults(prev => prev.filter(r => selectedIdSet.has(r.id)))
+
+    // Translate newly selected services if there's input text
+    if (inputText.trim() && servicesToTranslate.length > 0) {
+      void translateServices(servicesToTranslate)
     }
-  }, [availableServices, inputText, translateServices, setSelectedServices, setTranslationResults])
+  }, [selectedServices, enabledProviders, inputText, translateServices, setSelectedServices, setTranslationResults])
 
   const handleInputChange = useCallback((value: string) => {
     setInputText(value)
@@ -171,7 +202,10 @@ export function useTranslation() {
       void navigator.clipboard.writeText(text)
       toast.success('Translation copied to clipboard!')
     }, []),
-    handleRemoveService: useCallback((id: string) => handleToggleService(id, false), [handleToggleService]),
-    handleToggleService,
+    handleRemoveService: useCallback((id: string) => {
+      setSelectedServices(prev => prev.filter(s => s.id !== id))
+      setTranslationResults(prev => prev.filter(r => r.id !== id))
+    }, [setSelectedServices, setTranslationResults]),
+    handleServicesChange,
   }
 }

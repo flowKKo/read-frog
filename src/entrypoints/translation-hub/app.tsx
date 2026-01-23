@@ -10,7 +10,7 @@ export default function App() {
     handleLanguageExchange,
     handleCopyText,
     handleRemoveService,
-    handleToggleService,
+    handleServicesChange,
   } = useTranslation()
 
   return (
@@ -33,7 +33,7 @@ export default function App() {
               </div>
               <div className="order-3 lg:order-2 flex justify-end lg:items-end lg:h-full">
                 <TranslationServiceDropdown
-                  onToggleService={handleToggleService}
+                  onServicesChange={handleServicesChange}
                 />
               </div>
 
