@@ -1,5 +1,43 @@
 # @read-frog/extension
 
+## 1.23.0
+
+### Minor Changes
+
+- [#894](https://github.com/mengxi-ream/read-frog/pull/894) [`895294d`](https://github.com/mengxi-ream/read-frog/commit/895294d87d11dbc00a2f4e8703d5c82a542fba32) Thanks [@taiiiyang](https://github.com/taiiiyang)! - feat(subtitles): add AI-powered intelligent sentence segmentation
+
+- [#878](https://github.com/mengxi-ream/read-frog/pull/878) [`59ea5ef`](https://github.com/mengxi-ream/read-frog/commit/59ea5ef812e28ce9ba9f5c4c5daf16f6fca9971f) Thanks [@Yukiniro](https://github.com/Yukiniro)! - feat: add global site whitelist mode
+
+  Add a new Site Control feature that allows users to configure the extension to only run on specific whitelisted sites instead of all sites.
+
+- [#882](https://github.com/mengxi-ream/read-frog/pull/882) [`4839415`](https://github.com/mengxi-ream/read-frog/commit/4839415f9b5d8bcbe880d910d4b88e8b9da0bfef) Thanks [@Yukiniro](https://github.com/Yukiniro)! - feat: add skip languages feature to preserve paragraphs in specified languages
+
+- [#886](https://github.com/mengxi-ream/read-frog/pull/886) [`76aae58`](https://github.com/mengxi-ream/read-frog/commit/76aae58c29dea465a57fa87e17133e5f727678c8) Thanks [@taiiiyang](https://github.com/taiiiyang)! - feat(subtitles): add subtitle display mode and custom style settings
+
+### Patch Changes
+
+- [#895](https://github.com/mengxi-ream/read-frog/pull/895) [`793aed0`](https://github.com/mengxi-ream/read-frog/commit/793aed08ba5bf7e72f9276fdafa7d7cb26495303) Thanks [@taiiiyang](https://github.com/taiiiyang)! - fix(translation): skip usernames, timestamps, and quoted replies on Discord
+
+- [#883](https://github.com/mengxi-ream/read-frog/pull/883) [`5dc9f8c`](https://github.com/mengxi-ream/read-frog/commit/5dc9f8c0315114a0266227c549502c39360f541d) Thanks [@guoyongchang](https://github.com/guoyongchang)! - refactor(input-translation): update config fields design and fix truncation issue
+
+- [#897](https://github.com/mengxi-ream/read-frog/pull/897) [`d5e3c2f`](https://github.com/mengxi-ream/read-frog/commit/d5e3c2f0d6bdf81c33c4b54892422ec0f5d29771) Thanks [@taiiiyang](https://github.com/taiiiyang)! - feat(subtitles): add independent translation rate configuration for video subtitles
+
+## 1.22.1
+
+### Patch Changes
+
+- [#871](https://github.com/mengxi-ream/read-frog/pull/871) [`3786b10`](https://github.com/mengxi-ream/read-frog/commit/3786b10fcefcd355ce539ce36dfff64ed7914b52) Thanks [@taiiiyang](https://github.com/taiiiyang)! - feat: allow drag video subtitles
+
+- [#879](https://github.com/mengxi-ream/read-frog/pull/879) [`f303fa9`](https://github.com/mengxi-ream/read-frog/commit/f303fa9ea7931b7bb96f241bc61a1c44464ea1d4) Thanks [@taiiiyang](https://github.com/taiiiyang)! - fix: prevent node translation from triggering on phantom keyup events
+
+- [#881](https://github.com/mengxi-ream/read-frog/pull/881) [`15a0e38`](https://github.com/mengxi-ream/read-frog/commit/15a0e38d624bce4755e739a35d0002d117837957) Thanks [@taiiiyang](https://github.com/taiiiyang)! - fix(subtitles): improve YouTube ASR subtitle segmentation
+
+- [#877](https://github.com/mengxi-ream/read-frog/pull/877) [`97f15c5`](https://github.com/mengxi-ream/read-frog/commit/97f15c5a9f2502dbfe39af134fa7dc05471692e9) Thanks [@taiiiyang](https://github.com/taiiiyang)! - refactor(subtitles): use separate translation queue for subtitles
+
+- [#874](https://github.com/mengxi-ream/read-frog/pull/874) [`ffe6b37`](https://github.com/mengxi-ream/read-frog/commit/ffe6b376f387526f68339501e4fa7c80a41e3b51) Thanks [@taiiiyang](https://github.com/taiiiyang)! - feat: add auto-start subtitle translation option
+
+- [#880](https://github.com/mengxi-ream/read-frog/pull/880) [`f7d8a82`](https://github.com/mengxi-ream/read-frog/commit/f7d8a82ecd63d785a803908ed9c841c45aa4c7e0) Thanks [@taiiiyang](https://github.com/taiiiyang)! - feat(subtitles): add subtitle display mode settings with bilingual, original-only, translation-only modes and translation position options
+
 ## 1.22.0
 
 ### Minor Changes

@@ -15,6 +15,7 @@ popup:
   enabledFloatingButton: 启用悬浮按钮
   enabledSelectionToolbar: 启用选择工具栏
   alwaysTranslate: 总是翻译这个网站
+  addToWhitelist: 在此网站启用扩展
   options: 选项
   hover: 鼠标悬停
   translateParagraph: 来翻译段落
@@ -168,6 +169,18 @@ options:
         confirm: 确认
         cancel: 取消
         description: 此操作将清理所有翻译缓存。此操作无法撤销。
+  siteControl:
+    title: 站点控制
+    mode:
+      title: 扩展激活模式
+      description: 默认情况下，扩展在所有网站上运行。使用白名单模式可以限制扩展仅在特定网站上运行。
+      all: 在所有站点运行
+      whitelist: 仅在列出的站点运行（白名单）
+    patterns:
+      title: 启用的站点
+      description: 在白名单模式下，扩展仅在下方列出的网站上激活
+      enterUrlPattern: 输入 URL 模式（例如 example.com）
+      urlPattern: URL 模式
   overlayTools:
     title: 悬浮工具
     floatingButton:
@@ -182,17 +195,12 @@ options:
     toggle:
       title: 启用三连空格翻译
       description: 在任意输入框中快速按3次空格键即可翻译其内容
-    direction:
-      title: 翻译方向
-      description: 选择文本翻译的方向
-      normal: 源语言 → 目标语言
-      reverse: 目标语言 → 源语言
-      cycle: 循环切换
-    useCustomTarget:
-      title: 目标语言
-      description: 选择翻译的目标语言
-      sourceLanguage: 陪读蛙设置的来源语言
-      customTarget: 指定目标语言
+    languages:
+      title: 翻译语言
+      description: 选择输入翻译的源语言和目标语言
+      sourceCode: 网页源语言
+      targetCode: 翻译目标语言
+      enableCycle: 每次翻译时交换方向
     threshold:
       title: 触发阈值
       description: 连续空格按键之间的时间间隔
@@ -372,6 +380,12 @@ options:
       selectLanguages: 选择语言
       enableLLMDetection: 使用 LLM 检测语言
       enableLLMDetectionDescription: 提高准确率，但会增加延迟和 API 费用。需要配置 LLM 翻译提供商，并需配置自动翻译语言。
+    skipLanguages:
+      title: 基于语言的自动跳过
+      description: 当检测到指定语言时自动跳过段落翻译
+      selectLanguages: 选择语言
+      enableLLMDetection: 使用 LLM 检测语言
+      enableLLMDetectionDescription: 提高准确率，但会增加延迟和 API 费用。需要配置 LLM 翻译提供商。
     aiContentAware:
       title: AI 智能上下文翻译
       description: 通过向 AI 提供文章上下文来提高翻译质量
@@ -526,10 +540,50 @@ options:
         title: 译文位置
         above: 上方
         below: 下方
+      generalSettings: 通用设置
+      mainSubtitle: 主字幕
+      translationSubtitle: 翻译字幕
+      containerStyle: 背景
+      fontFamily: 字体
+      fontScale: 字体大小
+      color: 颜色
+      fontWeight: 字体粗细
+      backgroundOpacity: 背景透明度
+      reset: 重置为默认
+    aiSegmentation:
+      title: AI 智能断句
+      enable: 启用 AI 智能断句
+      enableDescription: 使用 AI 智能断句字幕，提升可读性。启用后时间轴由 AI 判断，可能出现时间轴错位。需要配置 LLM 翻译提供商。
+      clearCache: 清除缓存
+      clearing: 清除中...
+      clearCacheDialog:
+        title: 清除 AI 断句缓存
+        description: 这将删除所有已缓存的 AI 断句结果。下次播放启用 AI 断句的视频时，将重新处理字幕。
+        cancel: 取消
+        confirm: 确认
+    requestQueueConfig:
+      title: 字幕翻译速率
+      firstOnDescription: 使用
+      lastOnDescription: 算法调整字幕翻译请求的处理速度
+      capacity:
+        title: 最大突发请求数
+        description: 允许的临时突发请求数决定了在短时间内可以并发处理的最大字幕翻译请求数量
+      rate:
+        title: 平均每秒请求数
+        description: 平均每秒字幕翻译请求数，但允许配置最大突发数以临时发送超额请求
+    batchQueueConfig:
+      title: 字幕批量翻译
+      description: 配置批量翻译时的字符数限制和最大段落数量（仅对大语言模型翻译有效）
+      maxCharactersPerBatch:
+        title: 最大字符数
+        description: 每个批量请求允许的最大字符数，用于控制单次翻译的内容量
+      maxItemsPerBatch:
+        title: 最大段落数
+        description: 每个批量翻译的最大段落数，用于控制单次翻译的内容量
   whatsNew:
     title: 最近更新
   survey:
-    title: 新功能建议
+    title: 字幕翻译调研
   rateUs:
     title: 好评支持
 side:
@@ -578,6 +632,7 @@ subtitles:
     fetching: 字幕获取中
     fetchSuccess: 字幕加载成功
     fetchFailed: 字幕获取失败
+    segmenting: AI 断句中...
     processing: 字幕翻译中（预计等待 2 分钟）
     error: 发生错误
   errors:

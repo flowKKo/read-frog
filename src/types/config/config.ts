@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { MIN_SIDE_CONTENT_WIDTH } from '@/utils/constants/side'
 import { isReadProvider, isTranslateProvider, isTTSProvider, NON_API_TRANSLATE_PROVIDERS_MAP, providersConfigSchema } from './provider'
 import { readConfigSchema } from './read'
+import { videoSubtitlesSchema } from './subtitles'
 import { translateConfigSchema } from './translate'
 import { ttsConfigSchema } from './tts'
 // Language schema
@@ -42,40 +43,30 @@ const contextMenuSchema = z.object({
   enabled: z.boolean(),
 })
 
+// input translation language selector: 'sourceCode', 'targetCode', or fixed language code
+const inputTranslationLangSchema = z.union([
+  z.literal('sourceCode'),
+  z.literal('targetCode'),
+  langCodeISO6393Schema,
+])
+
 // input translation schema (triple-space trigger)
 const inputTranslationSchema = z.object({
   enabled: z.boolean(),
-  // normal: source → target (type in source language, translate to target)
-  // reverse: target → source (type in target language, translate to source)
-  // cycle: alternate between the two each time
-  direction: z.enum(['normal', 'reverse', 'cycle']),
-  // When false, use Read Frog's source language as target; when true, use custom targetCode
-  useCustomTarget: z.boolean(),
-  // Custom target language for input translation (only used when useCustomTarget is true)
-  targetCode: langCodeISO6393Schema,
-  // Time threshold in milliseconds between space presses (default 300ms)
+  fromLang: inputTranslationLangSchema,
+  toLang: inputTranslationLangSchema,
+  enableCycle: z.boolean(),
   timeThreshold: z.number().min(100).max(1000),
 })
 
-// video subtitles style schema
-const subtitlesDisplayModeSchema = z.enum(['bilingual', 'originalOnly', 'translationOnly'])
-const subtitlesTranslationPositionSchema = z.enum(['above', 'below'])
-
-const subtitlesStyleSchema = z.object({
-  displayMode: subtitlesDisplayModeSchema,
-  translationPosition: subtitlesTranslationPositionSchema,
-})
-
-// video subtitles schema
-const videoSubtitlesSchema = z.object({
-  enabled: z.boolean(),
-  autoStart: z.boolean(),
-  style: subtitlesStyleSchema,
-})
-
 // Export types for use in components
-export type SubtitlesDisplayMode = z.infer<typeof subtitlesDisplayModeSchema>
-export type SubtitlesTranslationPosition = z.infer<typeof subtitlesTranslationPositionSchema>
+export type InputTranslationLang = z.infer<typeof inputTranslationLangSchema>
+
+// site control schema
+const siteControlSchema = z.object({
+  mode: z.enum(['all', 'whitelist']),
+  patterns: z.array(z.string()),
+})
 
 // Complete config schema
 export const configSchema = z.object({
@@ -91,6 +82,7 @@ export const configSchema = z.object({
   contextMenu: contextMenuSchema,
   inputTranslation: inputTranslationSchema,
   videoSubtitles: videoSubtitlesSchema,
+  siteControl: siteControlSchema,
 }).superRefine((data, ctx) => {
   const providerIdsSet = new Set(data.providersConfig.map(p => p.id))
   const providerIds = Array.from(providerIdsSet)

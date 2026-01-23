@@ -15,6 +15,7 @@ popup:
   enabledFloatingButton: Yüzen butonu etkinleştir
   enabledSelectionToolbar: Seçim araç çubuğunu etkinleştir
   alwaysTranslate: Bu siteyi her zaman çevir
+  addToWhitelist: Bu sitede uzantıyı etkinleştir
   options: Seçenekler
   hover: Üzerine Gel
   translateParagraph: paragrafı çevirmek için
@@ -169,6 +170,18 @@ options:
         confirm: Onayla
         cancel: İptal
         description: Bu işlem tüm çeviri önbelleğini temizleyecektir. Bu işlem geri alınamaz.
+  siteControl:
+    title: Site Kontrolü
+    mode:
+      title: Uzantı Etkinleştirme Modu
+      description: Varsayılan olarak uzantı tüm web sitelerinde çalışır. Beyaz liste modunu kullanarak uzantıyı yalnızca belirli sitelerle sınırlayabilirsiniz.
+      all: Tüm sitelerde çalıştır
+      whitelist: Yalnızca listelenen sitelerde çalıştır (Beyaz Liste)
+    patterns:
+      title: Etkin Siteler
+      description: Beyaz liste modunda uzantı yalnızca aşağıda listelenen sitelerde etkin olacaktır
+      enterUrlPattern: URL deseni girin (örn. example.com)
+      urlPattern: URL Deseni
   overlayTools:
     title: Kaplama Araçları
     floatingButton:
@@ -183,17 +196,12 @@ options:
     toggle:
       title: Üçlü Boşluk Çevirisini Etkinleştir
       description: Herhangi bir giriş alanında boşluk tuşuna hızlıca 3 kez basarak içeriği çevirin
-    direction:
-      title: Çeviri Yönü
-      description: Metin çeviri yönünü seçin
-      normal: Kaynak → Hedef
-      reverse: Hedef → Kaynak
-      cycle: Döngü
-    useCustomTarget:
-      title: Hedef Dil
-      description: Çeviri yapılacak dili seçin
-      sourceLanguage: Read Frog kaynak dili
-      customTarget: Özel hedef dil
+    languages:
+      title: Çeviri Dilleri
+      description: Giriş çevirisi için kaynak ve hedef dilleri seçin
+      sourceCode: Sayfa Kaynak Dili
+      targetCode: Sayfa Hedef Dili
+      enableCycle: Her seferinde yönü değiştir
     threshold:
       title: Tetikleme Eşiği
       description: Boşluk tuşuna basışlar arasındaki zaman aralığı
@@ -371,6 +379,12 @@ options:
       selectLanguages: Dilleri seçin
       enableLLMDetection: Dil algılama için LLM kullan
       enableLLMDetectionDescription: Doğruluğu artırır ancak gecikme ve API maliyetleri ekler. LLM çeviri sağlayıcısı ve yapılandırılmış otomatik çeviri dilleri gerektirir.
+    skipLanguages:
+      title: Dile Göre Otomatik Atla
+      description: Belirli diller algılandığında paragraf çevirisini otomatik olarak atla
+      selectLanguages: Dilleri seçin
+      enableLLMDetection: Dil algılama için LLM kullan
+      enableLLMDetectionDescription: Doğruluğu artırır ancak gecikme ve API maliyetleri ekler. LLM çeviri sağlayıcısı gerektirir.
     aiContentAware:
       title: AI Akıllı Bağlam Çevirisi
       description: AI'ya makale bağlamı sağlayarak çeviri kalitesini artırın
@@ -525,10 +539,50 @@ options:
         title: Çeviri Konumu
         above: Üstte
         below: Altta
+      generalSettings: Genel Ayarlar
+      mainSubtitle: Ana Altyazı
+      translationSubtitle: Çeviri Altyazısı
+      containerStyle: Arka Plan
+      fontFamily: Yazı Tipi
+      fontScale: Yazı Boyutu
+      color: Renk
+      fontWeight: Yazı Kalınlığı
+      backgroundOpacity: Arka Plan Şeffaflığı
+      reset: Varsayılana Sıfırla
+    aiSegmentation:
+      title: AI Akıllı Bölümlendirme
+      enable: AI Akıllı Bölümlendirmeyi Etkinleştir
+      enableDescription: Daha iyi okunabilirlik için altyazıları akıllıca bölümlemek üzere AI kullanın. Zaman çizelgesi AI tarafından belirlenir ve zaman zaman zamanlama kayması olabilir. LLM çeviri sağlayıcısı gerektirir.
+      clearCache: Önbelleği Temizle
+      clearing: Temizleniyor...
+      clearCacheDialog:
+        title: AI Bölümlendirme Önbelleğini Temizle
+        description: Tüm önbelleğe alınmış AI bölümlendirme sonuçları silinecektir. AI bölümlendirme etkinleştirilmiş bir video oynatıldığında altyazılar yeniden işlenecektir.
+        cancel: İptal
+        confirm: Onayla
+    requestQueueConfig:
+      title: Altyazı Çeviri Hızı
+      firstOnDescription: Altyazı çeviri isteklerinin işlem hızını ayarlamak için
+      lastOnDescription: algoritmasını kullanın
+      capacity:
+        title: Maksimum Patlama İstek Sayısı
+        description: Kısa sürede eşzamanlı olarak işlenebilecek maksimum altyazı çeviri isteği sayısı
+      rate:
+        title: Saniyede Ortalama İstek
+        description: Saniyede ortalama altyazı çeviri isteği sayısı. Geçici olarak fazla istek göndermek için maksimum patlama sayısı yapılandırılabilir
+    batchQueueConfig:
+      title: Altyazı Toplu Çeviri
+      description: Toplu çeviri için karakter limitleri ve maksimum paragraf sayısını yapılandırın (yalnızca LLM çevirisi için geçerlidir)
+      maxCharactersPerBatch:
+        title: Maksimum Karakter
+        description: Her çevirinin içerik hacmini kontrol etmek için toplu istek başına izin verilen maksimum karakter sayısı
+      maxItemsPerBatch:
+        title: Maksimum Paragraf Sayısı
+        description: Her çevirinin içerik hacmini kontrol etmek için her toplu çeviri için maksimum paragraf sayısı
   whatsNew:
     title: Yenilikler
   survey:
-    title: Yeni Özellik Önerisi
+    title: Altyazı Çeviri Anketi
   rateUs:
     title: Bizi Değerlendirin
 side:
@@ -577,6 +631,7 @@ subtitles:
     fetching: Altyazılar alınıyor
     fetchSuccess: Altyazılar yüklendi
     fetchFailed: Altyazılar alınamadı
+    segmenting: AI bölümlendirmesi...
     processing: Altyazılar çevriliyor (yaklaşık 2 dakika)
     error: Bir hata oluştu
   errors:

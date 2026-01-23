@@ -15,6 +15,7 @@ popup:
   enabledFloatingButton: Bật nút nổi
   enabledSelectionToolbar: Bật thanh công cụ chọn văn bản
   alwaysTranslate: Luôn dịch trang web này
+  addToWhitelist: Bật tiện ích trên trang web này
   options: Tùy chọn
   hover: Di chuột
   translateParagraph: để dịch đoạn văn
@@ -169,6 +170,18 @@ options:
         confirm: Xác nhận
         cancel: Hủy
         description: Thao tác này sẽ xóa tất cả bộ nhớ đệm dịch. Hành động này không thể hoàn tác.
+  siteControl:
+    title: Kiểm soát trang web
+    mode:
+      title: Chế độ kích hoạt tiện ích mở rộng
+      description: Theo mặc định, tiện ích mở rộng chạy trên tất cả các trang web. Sử dụng chế độ danh sách trắng để giới hạn chỉ các trang web cụ thể.
+      all: Chạy trên tất cả các trang web
+      whitelist: Chỉ chạy trên các trang web được liệt kê (Danh sách trắng)
+    patterns:
+      title: Các trang web đã bật
+      description: Trong chế độ danh sách trắng, tiện ích mở rộng chỉ hoạt động trên các trang web được liệt kê bên dưới
+      enterUrlPattern: Nhập mẫu URL (ví dụ example.com)
+      urlPattern: Mẫu URL
   overlayTools:
     title: Công cụ nổi
     floatingButton:
@@ -183,17 +196,12 @@ options:
     toggle:
       title: Bật dịch ba lần nhấn phím cách
       description: Nhấn phím cách nhanh 3 lần trong bất kỳ trường nhập nào để dịch nội dung
-    direction:
-      title: Hướng dịch
-      description: Chọn hướng dịch văn bản
-      normal: Nguồn → Đích
-      reverse: Đích → Nguồn
-      cycle: Luân phiên
-    useCustomTarget:
-      title: Ngôn ngữ đích
-      description: Chọn ngôn ngữ dịch
-      sourceLanguage: Ngôn ngữ nguồn của Read Frog
-      customTarget: Ngôn ngữ đích tùy chỉnh
+    languages:
+      title: Ngôn ngữ dịch
+      description: Chọn ngôn ngữ nguồn và đích cho dịch đầu vào
+      sourceCode: Ngôn ngữ nguồn trang
+      targetCode: Ngôn ngữ đích trang
+      enableCycle: Đổi hướng mỗi lần
     threshold:
       title: Ngưỡng kích hoạt
       description: Khoảng thời gian giữa các lần nhấn phím cách
@@ -371,6 +379,12 @@ options:
       selectLanguages: Chọn ngôn ngữ
       enableLLMDetection: Sử dụng LLM để phát hiện ngôn ngữ
       enableLLMDetectionDescription: Cải thiện độ chính xác nhưng thêm độ trễ và chi phí API. Yêu cầu nhà cung cấp dịch LLM và các ngôn ngữ tự động dịch đã cấu hình.
+    skipLanguages:
+      title: Tự động bỏ qua theo ngôn ngữ
+      description: Tự động bỏ qua dịch đoạn văn khi phát hiện các ngôn ngữ cụ thể
+      selectLanguages: Chọn ngôn ngữ
+      enableLLMDetection: Sử dụng LLM để phát hiện ngôn ngữ
+      enableLLMDetectionDescription: Cải thiện độ chính xác nhưng thêm độ trễ và chi phí API. Yêu cầu nhà cung cấp dịch LLM.
     aiContentAware:
       title: Dịch ngữ cảnh thông minh AI
       description: Nâng cao chất lượng dịch bằng cách cung cấp ngữ cảnh bài viết cho AI
@@ -525,10 +539,50 @@ options:
         title: Vị trí bản dịch
         above: Phía trên
         below: Phía dưới
+      generalSettings: Cài đặt chung
+      mainSubtitle: Phụ đề chính
+      translationSubtitle: Phụ đề dịch
+      containerStyle: Nền
+      fontFamily: Phông chữ
+      fontScale: Cỡ chữ
+      color: Màu sắc
+      fontWeight: Độ đậm chữ
+      backgroundOpacity: Độ trong suốt nền
+      reset: Đặt lại về mặc định
+    aiSegmentation:
+      title: AI Phân đoạn thông minh
+      enable: Bật AI Phân đoạn thông minh
+      enableDescription: Sử dụng AI để phân đoạn phụ đề thông minh nhằm cải thiện khả năng đọc. Dòng thời gian do AI xác định, có thể đôi khi gây lệch thời gian. Yêu cầu nhà cung cấp dịch LLM.
+      clearCache: Xóa bộ nhớ đệm
+      clearing: Đang xóa...
+      clearCacheDialog:
+        title: Xóa bộ nhớ đệm AI phân đoạn
+        description: Tất cả kết quả AI phân đoạn đã lưu trong bộ nhớ đệm sẽ bị xóa. Lần tới khi phát video có bật AI phân đoạn, phụ đề sẽ được xử lý lại.
+        cancel: Hủy
+        confirm: Xác nhận
+    requestQueueConfig:
+      title: Tốc độ dịch phụ đề
+      firstOnDescription: Điều chỉnh tốc độ xử lý yêu cầu dịch phụ đề bằng thuật toán
+      lastOnDescription: ''
+      capacity:
+        title: Số yêu cầu tối đa đồng thời
+        description: Số lượng yêu cầu dịch phụ đề tối đa có thể xử lý đồng thời trong khoảng thời gian ngắn
+      rate:
+        title: Số yêu cầu trung bình/giây
+        description: Số yêu cầu dịch phụ đề trung bình mỗi giây, có thể cấu hình số yêu cầu tối đa để tạm thời gửi yêu cầu vượt quá
+    batchQueueConfig:
+      title: Dịch phụ đề theo lô
+      description: Cấu hình giới hạn ký tự và số đoạn văn tối đa cho dịch theo lô (chỉ có hiệu lực với dịch LLM)
+      maxCharactersPerBatch:
+        title: Số ký tự tối đa
+        description: Số ký tự tối đa được phép cho mỗi yêu cầu lô để kiểm soát khối lượng nội dung của mỗi bản dịch
+      maxItemsPerBatch:
+        title: Số đoạn văn tối đa
+        description: Số đoạn văn tối đa cho mỗi bản dịch lô để kiểm soát khối lượng nội dung của mỗi bản dịch
   whatsNew:
     title: Có gì mới
   survey:
-    title: Đề xuất tính năng mới
+    title: Khảo sát dịch phụ đề
   rateUs:
     title: Đánh giá chúng tôi
 side:
@@ -577,6 +631,7 @@ subtitles:
     fetching: Đang lấy phụ đề
     fetchSuccess: Đã tải phụ đề
     fetchFailed: Lấy phụ đề thất bại
+    segmenting: AI đang phân đoạn...
     processing: Đang dịch phụ đề (khoảng 2 phút)
     error: Đã xảy ra lỗi
   errors:

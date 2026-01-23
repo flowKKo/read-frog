@@ -6,6 +6,8 @@ import FrogToast from '@/components/frog-toast'
 import { UserAccount } from '@/components/user-account'
 import { version } from '../../../package.json'
 import { initIsIgnoreTabAtom } from './atoms/ignore'
+import { initSiteControlAtomsAtom } from './atoms/site-control'
+import { AddToWhitelist } from './components/add-to-whitelist'
 import { AISmartContext } from './components/ai-smart-context'
 import { AlwaysTranslate } from './components/always-translate'
 import BlogNotification from './components/blog-notification'
@@ -23,10 +25,12 @@ import TranslationModeSelector from './components/translation-mode-selector'
 
 function App() {
   const initIsIgnoreTab = useSetAtom(initIsIgnoreTabAtom)
+  const initSiteControlAtoms = useSetAtom(initSiteControlAtomsAtom)
 
   useEffect(() => {
     void initIsIgnoreTab()
-  }, [initIsIgnoreTab])
+    void initSiteControlAtoms()
+  }, [initIsIgnoreTab, initSiteControlAtoms])
 
   return (
     <>
@@ -49,6 +53,7 @@ function App() {
           <ReadButton />
           <TranslateButton />
         </div>
+        <AddToWhitelist />
         <AlwaysTranslate />
         <Hotkey />
         <AISmartContext />

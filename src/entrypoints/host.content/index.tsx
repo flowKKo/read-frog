@@ -12,12 +12,14 @@ import { logger } from '@/utils/logger'
 import { onMessage, sendMessage } from '@/utils/message'
 import { protectSelectAllShadowRoot } from '@/utils/select-all'
 import { insertShadowRootUIWrapperInto } from '@/utils/shadow-root'
+import { isSiteEnabled } from '@/utils/site-control'
 import { addStyleToShadow } from '@/utils/styles'
 import App from './app'
 import { bindTranslationShortcutKey } from './translation-control/bind-translation-shortcut'
 import { handleTranslationModeChange } from './translation-control/handle-config-change'
 import { registerNodeTranslationTriggers } from './translation-control/node-translation'
 import { PageTranslationManager } from './translation-control/page-translation'
+import '@/utils/crypto-polyfill'
 import './listen'
 import './style.css'
 
@@ -28,7 +30,7 @@ declare global {
 }
 
 export default defineContentScript({
-  matches: ['*://*/*'],
+  matches: ['*://*/*', 'file:///*'],
   cssInjectionMode: 'manifest',
   allFrames: true,
   async main(ctx) {
@@ -36,6 +38,12 @@ export default defineContentScript({
     if (window.__READ_FROG_HOST_INJECTED__)
       return
     window.__READ_FROG_HOST_INJECTED__ = true
+
+    // Check global site control
+    const initialConfig = await getLocalConfig()
+    if (!isSiteEnabled(window.location.href, initialConfig)) {
+      return
+    }
 
     // eruda.init()
 
@@ -67,7 +75,6 @@ export default defineContentScript({
 
     void registerNodeTranslationTriggers()
 
-    const initialConfig = await getLocalConfig()
     const preloadConfig = initialConfig?.translate.page.preload ?? DEFAULT_CONFIG.translate.page.preload
     const manager = new PageTranslationManager({
       root: null,
