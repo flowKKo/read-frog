@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Button } from '@/components/shadcn/button'
+import { Button } from '@/components/base-ui/button'
 import { Textarea } from '@/components/shadcn/textarea'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/shadcn/tooltip'
 import { cn } from '@/utils/styles/utils'

@@ -3,8 +3,8 @@ import { i18n } from '#imports'
 import { Icon } from '@iconify/react'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Activity, useState } from 'react'
+import { Button } from '@/components/base-ui/button'
 import { Badge } from '@/components/shadcn/badge'
-import { Button } from '@/components/shadcn/button'
 import {
   Card,
   CardAction,

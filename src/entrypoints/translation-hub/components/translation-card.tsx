@@ -1,8 +1,8 @@
 import type { TranslationResult } from '../types'
 import { Icon } from '@iconify/react'
+import { Button } from '@/components/base-ui/button'
 import ProviderIcon from '@/components/provider-icon'
 import { useTheme } from '@/components/providers/theme-provider'
-import { Button } from '@/components/shadcn/button'
 import { PROVIDER_ITEMS } from '@/utils/constants/providers'
 
 interface TranslationCardProps {

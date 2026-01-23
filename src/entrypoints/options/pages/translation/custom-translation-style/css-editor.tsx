@@ -10,7 +10,7 @@
 import { i18n } from '#imports'
 import { useAtom } from 'jotai'
 import { Activity, useMemo, useState } from 'react'
-import { Button } from '@/components/shadcn/button'
+import { Button } from '@/components/base-ui/button'
 import { Field, FieldLabel } from '@/components/shadcn/field'
 import { CSSCodeEditor } from '@/components/ui/css-code-editor'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'

@@ -49,4 +49,6 @@ function Button({
   )
 }
 
+export type ButtonProps = VariantProps<typeof buttonVariants>
+
 export { Button, buttonVariants }

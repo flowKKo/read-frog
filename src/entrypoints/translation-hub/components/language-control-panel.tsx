@@ -1,6 +1,6 @@
 import { Icon } from '@iconify/react'
 import { useAtom } from 'jotai'
-import { Button } from '@/components/shadcn/button'
+import { Button } from '@/components/base-ui/button'
 import { sourceLanguageAtom, targetLanguageAtom } from '../atoms'
 import { SearchableLanguageSelector } from './searchable-language-selector'
 

@@ -2,13 +2,13 @@ import { Combobox as ComboboxPrimitive } from '@base-ui/react'
 import { IconCheck, IconChevronDown, IconX } from '@tabler/icons-react'
 
 import * as React from 'react'
-import { Button } from 'src/components/base-ui/button'
+import { Button } from '@/components/base-ui/button'
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
-} from 'src/components/base-ui/input-group'
+} from '@/components/base-ui/input-group'
 import { cn } from '@/utils/styles/utils'
 
 const Combobox = ComboboxPrimitive.Root

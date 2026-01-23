@@ -2,6 +2,7 @@ import { browser, i18n } from '#imports'
 import { IconSettings } from '@tabler/icons-react'
 import { useAtomValue } from 'jotai'
 import { useMemo } from 'react'
+import { Button } from '@/components/base-ui/button'
 import {
   Select,
   SelectContent,
@@ -13,7 +14,6 @@ import {
 } from '@/components/base-ui/select'
 import ProviderIcon from '@/components/provider-icon'
 import { useTheme } from '@/components/providers/theme-provider'
-import { Button } from '@/components/shadcn/button'
 import { configFieldsAtomMap } from '@/utils/atoms/config'
 import { filterEnabledProvidersConfig, getLLMTranslateProvidersConfig, getNonAPIProvidersConfig, getPureAPIProvidersConfig } from '@/utils/config/helpers'
 import { PROVIDER_ITEMS } from '@/utils/constants/providers'
