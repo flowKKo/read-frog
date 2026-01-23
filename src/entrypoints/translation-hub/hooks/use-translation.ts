@@ -205,6 +205,33 @@ export function useTranslation() {
     }
   }, [languageKey])
 
+  // Persist service order to config
+  const updateServiceOrder = useCallback((services: ServiceInfo[]) => {
+    setSelectedServices(services)
+    void setTranslationHubConfig({ serviceOrder: services.map(s => s.id) })
+  }, [setSelectedServices, setTranslationHubConfig])
+
+  const handleRemoveService = useCallback((id: string) => {
+    setSelectedServices((prev) => {
+      const newServices = prev.filter(s => s.id !== id)
+      void setTranslationHubConfig({ serviceOrder: newServices.map(s => s.id) })
+      return newServices
+    })
+    setTranslationResults(prev => prev.filter(r => r.id !== id))
+  }, [setSelectedServices, setTranslationResults, setTranslationHubConfig])
+
+  const handleReorder = useCallback((newCards: TranslationResult[]) => {
+    const newOrder = newCards
+      .map(card => selectedServices.find(s => s.id === card.id))
+      .filter((s): s is ServiceInfo => s !== undefined)
+    updateServiceOrder(newOrder)
+  }, [selectedServices, updateServiceOrder])
+
+  const handleCopyText = useCallback((text: string) => {
+    void navigator.clipboard.writeText(text)
+    toast.success('Translation copied to clipboard!')
+  }, [])
+
   return {
     sourceLanguage,
     setSourceLanguage,
@@ -217,25 +244,9 @@ export function useTranslation() {
     translationResults,
     handleTranslate,
     handleLanguageExchange,
-    handleCopyText: useCallback((text: string) => {
-      void navigator.clipboard.writeText(text)
-      toast.success('Translation copied to clipboard!')
-    }, []),
-    handleRemoveService: useCallback((id: string) => {
-      setSelectedServices((prev) => {
-        const newServices = prev.filter(s => s.id !== id)
-        void setTranslationHubConfig({ serviceOrder: newServices.map(s => s.id) })
-        return newServices
-      })
-      setTranslationResults(prev => prev.filter(r => r.id !== id))
-    }, [setSelectedServices, setTranslationResults, setTranslationHubConfig]),
+    handleCopyText,
+    handleRemoveService,
     handleServicesChange,
-    handleReorder: useCallback((newCards: TranslationResult[]) => {
-      const newOrder = newCards.map(card =>
-        selectedServices.find(s => s.id === card.id)!,
-      ).filter(Boolean)
-      setSelectedServices(newOrder)
-      void setTranslationHubConfig({ serviceOrder: newOrder.map(s => s.id) })
-    }, [selectedServices, setSelectedServices, setTranslationHubConfig]),
+    handleReorder,
   }
 }
