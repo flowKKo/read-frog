@@ -27,6 +27,7 @@ export function TranslationCard({ result, onCopy, onRemove }: TranslationCardPro
     <div className="border rounded-lg bg-card">
       <div className={`flex items-center justify-between px-3 py-2 ${hasContent ? 'border-b' : ''}`}>
         <div className="flex items-center space-x-2">
+          <Icon icon="tabler:grip-vertical" className="h-4 w-4 text-muted-foreground" />
           {providerItem
             ? (
                 <ProviderIcon

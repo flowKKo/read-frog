@@ -1,5 +1,5 @@
 import type { ServiceInfo, TranslationResult } from '../types'
-import { useAtom, useAtomValue } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useCallback, useEffect, useEffectEvent, useMemo, useRef } from 'react'
 import { toast } from 'sonner'
 import { configFieldsAtomMap } from '@/utils/atoms/config'
@@ -13,9 +13,26 @@ import {
   translationResultsAtom,
 } from '../atoms'
 
+function applyStoredOrder(services: ServiceInfo[], storedOrder: string[]): ServiceInfo[] {
+  if (storedOrder.length === 0)
+    return services
+  const serviceMap = new Map(services.map(s => [s.id, s]))
+  const orderedServices: ServiceInfo[] = []
+  for (const id of storedOrder) {
+    const service = serviceMap.get(id)
+    if (service) {
+      orderedServices.push(service)
+      serviceMap.delete(id)
+    }
+  }
+  return [...orderedServices, ...Array.from(serviceMap.values())]
+}
+
 export function useTranslation() {
   const language = useAtomValue(configFieldsAtomMap.language)
   const providersConfig = useAtomValue(configFieldsAtomMap.providersConfig)
+  const translationHubConfig = useAtomValue(configFieldsAtomMap.translationHub)
+  const setTranslationHubConfig = useSetAtom(configFieldsAtomMap.translationHub)
   const enabledProviders = useMemo(() => filterEnabledProvidersConfig(providersConfig), [providersConfig])
 
   const [sourceLanguage, setSourceLanguage] = useAtom(sourceLanguageAtom)
@@ -45,11 +62,13 @@ export function useTranslation() {
           provider: p.provider,
           type: 'ai', // Default type, will be refined based on actual provider type
         }))
-        setSelectedServices(services)
+        // Apply stored order if available
+        const orderedServices = applyStoredOrder(services, translationHubConfig.serviceOrder)
+        setSelectedServices(orderedServices)
       }
       isInitRef.current.services = true
     }
-  }, [enabledProviders, selectedServices.length, setSelectedServices])
+  }, [enabledProviders, selectedServices.length, setSelectedServices, translationHubConfig.serviceOrder])
 
   // Race condition handling
   const activeRequestIdsRef = useRef<Record<string, number>>({})
@@ -203,9 +222,20 @@ export function useTranslation() {
       toast.success('Translation copied to clipboard!')
     }, []),
     handleRemoveService: useCallback((id: string) => {
-      setSelectedServices(prev => prev.filter(s => s.id !== id))
+      setSelectedServices((prev) => {
+        const newServices = prev.filter(s => s.id !== id)
+        void setTranslationHubConfig({ serviceOrder: newServices.map(s => s.id) })
+        return newServices
+      })
       setTranslationResults(prev => prev.filter(r => r.id !== id))
-    }, [setSelectedServices, setTranslationResults]),
+    }, [setSelectedServices, setTranslationResults, setTranslationHubConfig]),
     handleServicesChange,
+    handleReorder: useCallback((newCards: TranslationResult[]) => {
+      const newOrder = newCards.map(card =>
+        selectedServices.find(s => s.id === card.id)!,
+      ).filter(Boolean)
+      setSelectedServices(newOrder)
+      void setTranslationHubConfig({ serviceOrder: newOrder.map(s => s.id) })
+    }, [selectedServices, setSelectedServices, setTranslationHubConfig]),
   }
 }

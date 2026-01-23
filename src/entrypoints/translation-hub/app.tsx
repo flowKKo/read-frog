@@ -11,6 +11,7 @@ export default function App() {
     handleCopyText,
     handleRemoveService,
     handleServicesChange,
+    handleReorder,
   } = useTranslation()
 
   return (
@@ -48,6 +49,7 @@ export default function App() {
                 <TranslationPanel
                   onCopy={handleCopyText}
                   onRemove={handleRemoveService}
+                  onReorder={handleReorder}
                 />
               </div>
             </div>

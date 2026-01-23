@@ -1,14 +1,17 @@
+import type { TranslationResult } from '../types'
 import { Icon } from '@iconify/react'
 import { useAtomValue } from 'jotai'
+import { SortableList } from '@/components/sortable-list'
 import { selectedServicesAtom, translationResultsAtom } from '../atoms'
 import { TranslationCard } from './translation-card'
 
 interface TranslationPanelProps {
   onCopy: (text: string) => void
   onRemove: (id: string) => void
+  onReorder: (cards: TranslationResult[]) => void
 }
 
-export function TranslationPanel({ onCopy, onRemove }: TranslationPanelProps) {
+export function TranslationPanel({ onCopy, onRemove, onReorder }: TranslationPanelProps) {
   const results = useAtomValue(translationResultsAtom)
   const selectedServices = useAtomValue(selectedServicesAtom)
 
@@ -35,15 +38,17 @@ export function TranslationPanel({ onCopy, onRemove }: TranslationPanelProps) {
   }
 
   return (
-    <div className="space-y-3">
-      {displayCards.map(result => (
+    <SortableList
+      list={displayCards}
+      setList={onReorder}
+      className="space-y-3"
+      renderItem={result => (
         <TranslationCard
-          key={result.id}
           result={result}
           onCopy={onCopy}
           onRemove={onRemove}
         />
-      ))}
-    </div>
+      )}
+    />
   )
 }
