@@ -19,7 +19,7 @@ popup:
   hover: ホバー
   translateParagraph: 段落を翻訳
   hub:
-    tooltip: 翻訳ハブでマルチAPIテキスト翻訳などのより多くの翻訳機能をお試しください
+    tooltip: 複数の翻訳モデルで同時にテキストを翻訳
   discord:
     tooltip: Discordに参加して開発者とつながり、新機能を先行体験しましょう
   blog:
@@ -28,6 +28,7 @@ popup:
   aiSmartContextDescription: ウェブページのコンテキストを使用して翻訳品質を向上させます。LLM翻訳プロバイダーが必要です。
   more:
     title: その他
+    translationHub: 翻訳ハブ
     joinDiscord: Discordに参加
     joinWechat: WeChatグループに参加
     starGithub: Githubでスター

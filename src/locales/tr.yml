@@ -20,7 +20,7 @@ popup:
   hover: Üzerine Gel
   translateParagraph: paragrafı çevirmek için
   hub:
-    tooltip: Çeviri Hub'ında multi-API metin çevirisi gibi daha fazla çeviri özelliğini deneyin
+    tooltip: Birden fazla çeviri modeliyle aynı anda metin çevirin
   discord:
     tooltip: Geliştiricilerle bağlantı kurmak ve yeni özelliklere erken erişim sağlamak için Discord'a katılın
   blog:
@@ -29,6 +29,7 @@ popup:
   aiSmartContextDescription: Çeviri kalitesini artırmak için web sayfası bağlamını kullanır. LLM çeviri sağlayıcısı gerektirir.
   more:
     title: Daha Fazla
+    translationHub: Çeviri Merkezi
     joinDiscord: Discord'a Katıl
     joinWechat: WeChat Grubuna Katıl
     starGithub: Github'da Yıldız Ver

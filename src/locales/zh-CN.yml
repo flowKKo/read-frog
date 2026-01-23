@@ -20,7 +20,7 @@ popup:
   hover: 鼠标悬停
   translateParagraph: 来翻译段落
   hub:
-    tooltip: 在翻译中心尝试更多翻译功能，如多API文本翻译
+    tooltip: 一次性调用多个翻译模型翻译文本
   discord:
     tooltip: 加入 Discord 与开发者交流，抢先体验新功能
   blog:
@@ -29,6 +29,7 @@ popup:
   aiSmartContextDescription: 结合网页上下文提升翻译效果。需要配置 LLM 翻译服务商。
   more:
     title: 更多
+    translationHub: 翻译中心
     joinDiscord: 加入 Discord
     joinWechat: 加入微信群
     starGithub: Github 加星

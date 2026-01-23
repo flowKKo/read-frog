@@ -20,7 +20,7 @@ popup:
   hover: Hover
   translateParagraph: to translate paragraph
   hub:
-    tooltip: Try more translation features in Translation Hub like multi-API text translation
+    tooltip: Translate text with multiple models simultaneously
   discord:
     tooltip: Join Discord to connect with developers and get early access to new features
   blog:
@@ -29,6 +29,7 @@ popup:
   aiSmartContextDescription: Uses webpage context to improve translation quality. Requires LLM translation provider.
   more:
     title: More
+    translationHub: Translation Hub
     joinDiscord: Join Discord
     joinWechat: Join WeChat Group
     starGithub: Star on Github

@@ -20,7 +20,7 @@ popup:
   hover: Di chuột
   translateParagraph: để dịch đoạn văn
   hub:
-    tooltip: Thử nhiều tính năng dịch thuật hơn trong Trung tâm Dịch thuật như dịch văn bản đa-API
+    tooltip: Dịch văn bản với nhiều mô hình đồng thời
   discord:
     tooltip: Tham gia Discord để kết nối với các nhà phát triển và truy cập sớm các tính năng mới
   blog:
@@ -29,6 +29,7 @@ popup:
   aiSmartContextDescription: Sử dụng ngữ cảnh trang web để cải thiện chất lượng dịch. Yêu cầu nhà cung cấp dịch LLM.
   more:
     title: Thêm
+    translationHub: Trung tâm Dịch thuật
     joinDiscord: Tham gia Discord
     joinWechat: Tham gia nhóm WeChat
     starGithub: Đánh dấu sao trên Github

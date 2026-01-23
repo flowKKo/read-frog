@@ -12,7 +12,6 @@ import { AISmartContext } from './components/ai-smart-context'
 import { AlwaysTranslate } from './components/always-translate'
 import BlogNotification from './components/blog-notification'
 import { DiscordButton } from './components/discord-button'
-import { HubButton } from './components/hub-button'
 import LanguageOptionsSelector from './components/language-options-selector'
 import { MoreMenu } from './components/more-menu'
 import Hotkey from './components/node-translation-hotkey-selector'
@@ -21,6 +20,7 @@ import ReadProviderField from './components/read-provider-field'
 import TranslateButton from './components/translate-button'
 import TranslatePromptSelector from './components/translate-prompt-selector'
 import TranslateProviderField from './components/translate-provider-field'
+import { TranslationHubButton } from './components/translation-hub-button'
 import TranslationModeSelector from './components/translation-mode-selector'
 
 function App() {
@@ -38,7 +38,7 @@ function App() {
         <div className="flex items-center justify-between">
           <UserAccount />
           <div className="flex items-center">
-            <HubButton />
+            <TranslationHubButton />
             <DiscordButton />
             <BlogNotification />
           </div>

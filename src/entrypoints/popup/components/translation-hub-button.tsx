@@ -3,16 +3,11 @@ import { Icon } from '@iconify/react'
 import { Button } from '@/components/shadcn/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/shadcn/tooltip'
 
-export function HubButton() {
+export function TranslationHubButton() {
   const handleClick = async () => {
-    try {
-      await browser.tabs.create({
-        url: browser.runtime.getURL('/translation-hub.html'),
-      })
-    }
-    catch (error) {
-      console.error('Error opening translation hub:', error)
-    }
+    await browser.tabs.create({
+      url: browser.runtime.getURL('/translation-hub.html'),
+    })
   }
 
   return (
@@ -23,7 +18,7 @@ export function HubButton() {
           size="icon"
           onClick={handleClick}
         >
-          <Icon icon="material-symbols:translate" />
+          <Icon icon="tabler:language-hiragana" />
         </Button>
       </TooltipTrigger>
       <TooltipContent className="max-w-[200px] text-wrap">
