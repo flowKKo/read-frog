@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Button } from '@/components/shadcn/button'
 import { Textarea } from '@/components/shadcn/textarea'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/shadcn/tooltip'
-import { cn } from '@/utils/styles/tailwind'
+import { cn } from '@/utils/styles/utils'
 
 interface InsertableTextareaHandle extends HTMLTextAreaElement {
   insertTextAtCursor: (text: string) => void

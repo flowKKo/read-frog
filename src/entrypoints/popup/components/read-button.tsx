@@ -7,7 +7,7 @@ import { configFieldsAtomMap } from '@/utils/atoms/config'
 
 import { isAnyAPIKeyForReadProviders } from '@/utils/config/api'
 import { sendMessage } from '@/utils/message'
-import { cn } from '@/utils/styles/tailwind'
+import { cn } from '@/utils/styles/utils'
 import { isIgnoreTabAtom } from '../atoms/ignore'
 import { isCurrentSiteInWhitelistAtom, isWhitelistModeAtom } from '../atoms/site-control'
 

@@ -8,7 +8,7 @@ import { useExtractContent } from '@/hooks/read/extract'
 import { useReadArticle } from '@/hooks/read/read'
 import { getFaviconUrl } from '@/utils/content/favicon'
 import { onMessage } from '@/utils/message'
-import { cn } from '@/utils/styles/tailwind'
+import { cn } from '@/utils/styles/utils'
 import { isSideOpenAtom } from '../../atoms'
 
 export function Metadata({ className }: { className?: string }) {

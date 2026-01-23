@@ -30,7 +30,7 @@ import {
 import { QuickInsertableTextarea } from '@/components/ui/insertable-textarea'
 import { configFieldsAtomMap } from '@/utils/atoms/config'
 import { DEFAULT_TRANSLATE_PROMPT, DEFAULT_TRANSLATE_PROMPT_ID, DEFAULT_TRANSLATE_SYSTEM_PROMPT, getTokenCellText, TOKENS } from '@/utils/constants/prompt'
-import { cn } from '@/utils/styles/tailwind'
+import { cn } from '@/utils/styles/utils'
 import { ConfigCard } from '../../../components/config-card'
 import { isExportPromptModeAtom, selectedPromptsToExportAtom } from './atoms'
 import { DeletePrompt } from './delete-prompt'

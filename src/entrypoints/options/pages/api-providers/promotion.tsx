@@ -2,7 +2,7 @@ import { i18n } from '#imports'
 import { useAtom, useSetAtom } from 'jotai'
 import { Button } from '@/components/shadcn/button'
 import { configFieldsAtomMap } from '@/utils/atoms/config'
-import { cn } from '@/utils/styles/tailwind'
+import { cn } from '@/utils/styles/utils'
 import { selectedProviderIdAtom } from './atoms'
 import { addProvider } from './utils'
 

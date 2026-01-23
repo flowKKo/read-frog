@@ -18,7 +18,7 @@ import { MAX_CUSTOM_CSS_LENGTH } from '@/types/config/translate'
 import { configFieldsAtomMap } from '@/utils/atoms/config'
 import { WEBSITE_URL } from '@/utils/constants/url'
 import { lintCSS } from '@/utils/css/lint-css'
-import { cn } from '@/utils/styles/tailwind'
+import { cn } from '@/utils/styles/utils'
 
 export function CSSEditor() {
   const [translateConfig, setTranslateConfig] = useAtom(configFieldsAtomMap.translate)
