@@ -79,3 +79,6 @@ export interface TranslateRequest {
 }
 
 export const translateRequestAtom = atom<TranslateRequest | null>(null)
+
+// Cache for DragOverlay: providerId -> { result, timestamp }
+export const translationCacheAtom = atom<Record<string, { result: string | Error, timestamp: number }>>({})

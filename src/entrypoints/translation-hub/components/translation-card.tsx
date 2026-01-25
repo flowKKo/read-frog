@@ -12,7 +12,7 @@ import { configFieldsAtomMap } from '@/utils/atoms/config'
 import { getProviderConfigById } from '@/utils/config/helpers'
 import { PROVIDER_ITEMS } from '@/utils/constants/providers'
 import { executeTranslate } from '@/utils/host/translate/execute-translate'
-import { selectedProviderIdsAtom, translateRequestAtom } from '../atoms'
+import { selectedProviderIdsAtom, translateRequestAtom, translationCacheAtom } from '../atoms'
 
 interface TranslationCardProps {
   providerId: string
@@ -24,11 +24,12 @@ export function TranslationCard({ providerId }: TranslationCardProps) {
   const language = useAtomValue(configFieldsAtomMap.language)
   const providersConfig = useAtomValue(configFieldsAtomMap.providersConfig)
   const [selectedProviderIds, setSelectedProviderIds] = useAtom(selectedProviderIdsAtom)
+  const [cache, setCache] = useAtom(translationCacheAtom)
 
   const provider = getProviderConfigById(providersConfig, providerId)
   const providerItem = provider ? PROVIDER_ITEMS[provider.provider as keyof typeof PROVIDER_ITEMS] : undefined
+  const cached = cache[providerId]
 
-  // Track request IDs to ignore stale responses from slow providers
   const requestIdRef = useRef(0)
 
   const mutation = useMutation({
@@ -39,38 +40,33 @@ export function TranslationCard({ providerId }: TranslationCardProps) {
         throw new Error('Provider not found')
 
       const myRequestId = ++requestIdRef.current
-      const result = await executeTranslate(req.inputText, {
-        sourceCode: req.sourceLanguage,
-        targetCode: req.targetLanguage,
-        level: language.level,
-      }, provider)
-
-      // Ignore stale responses - return undefined to silently discard
-      if (requestIdRef.current !== myRequestId) {
-        return undefined
+      try {
+        const result = await executeTranslate(req.inputText, {
+          sourceCode: req.sourceLanguage,
+          targetCode: req.targetLanguage,
+          level: language.level,
+        }, provider)
+        if (requestIdRef.current === myRequestId)
+          setCache(prev => ({ ...prev, [providerId]: { result, timestamp: req.timestamp } }))
+        return result
       }
-
-      return result
+      catch (e) {
+        if (requestIdRef.current === myRequestId)
+          setCache(prev => ({ ...prev, [providerId]: { result: e as Error, timestamp: req.timestamp } }))
+        throw e
+      }
     },
   })
 
-  // Trigger translation when request changes
   const triggerTranslation = useEffectEvent(() => {
-    if (request?.inputText.trim()) {
-      mutation.mutate(request)
-    }
+    if (!request?.inputText.trim() || cached?.timestamp === request.timestamp)
+      return
+    mutation.mutate(request)
   })
 
   useEffect(() => {
     triggerTranslation()
   }, [request?.timestamp])
-
-  const handleCopy = () => {
-    if (mutation.data) {
-      void navigator.clipboard.writeText(mutation.data)
-      toast.success(i18n.t('translationHub.copiedToClipboard'))
-    }
-  }
 
   const handleRemove = () => {
     setSelectedProviderIds(selectedProviderIds.filter(id => id !== providerId))
@@ -79,7 +75,9 @@ export function TranslationCard({ providerId }: TranslationCardProps) {
   if (!provider)
     return null
 
-  const hasContent = mutation.isError || (mutation.data !== undefined && mutation.data !== '')
+  const isError = cached?.result instanceof Error
+  const data = cached?.result instanceof Error ? undefined : cached?.result
+  const hasContent = isError || (data !== undefined && data !== '')
 
   return (
     <div className="border rounded-lg bg-card">
@@ -104,11 +102,14 @@ export function TranslationCard({ providerId }: TranslationCardProps) {
           {mutation.isPending && (
             <Icon icon="tabler:loader-2" className="h-4 w-4 animate-spin text-muted-foreground" />
           )}
-          {mutation.data && !mutation.isPending && (
+          {data && !mutation.isPending && (
             <Button
               variant="ghost"
               size="icon"
-              onClick={handleCopy}
+              onClick={() => {
+                void navigator.clipboard.writeText(data)
+                toast.success(i18n.t('translationHub.copiedToClipboard'))
+              }}
               className="h-7 w-7"
               title={i18n.t('translationHub.copyTranslation')}
             >
@@ -129,7 +130,7 @@ export function TranslationCard({ providerId }: TranslationCardProps) {
 
       {hasContent && (
         <div className="p-3">
-          {mutation.isError
+          {isError
             ? (
                 <div>
                   <div className="flex items-center space-x-2 text-destructive mb-1">
@@ -137,16 +138,13 @@ export function TranslationCard({ providerId }: TranslationCardProps) {
                     <span className="text-sm font-medium">{i18n.t('translationHub.translationFailed')}</span>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {mutation.error instanceof Error ? mutation.error.message : i18n.t('translationHub.translationFailedFallback')}
+                    {(cached?.result as Error).message || i18n.t('translationHub.translationFailedFallback')}
                   </p>
                 </div>
               )
             : (
-                <div
-                  key={mutation.data}
-                  className="text-base leading-relaxed whitespace-pre-wrap animate-in fade-in duration-300"
-                >
-                  {mutation.data}
+                <div className="text-base leading-relaxed whitespace-pre-wrap">
+                  {data}
                 </div>
               )}
         </div>
