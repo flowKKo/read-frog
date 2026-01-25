@@ -68,11 +68,6 @@ const siteControlSchema = z.object({
   patterns: z.array(z.string()),
 })
 
-// translation hub schema
-const translationHubSchema = z.object({
-  serviceOrder: z.array(z.string()),
-})
-
 // Complete config schema
 export const configSchema = z.object({
   language: languageSchema,
@@ -88,7 +83,6 @@ export const configSchema = z.object({
   inputTranslation: inputTranslationSchema,
   videoSubtitles: videoSubtitlesSchema,
   siteControl: siteControlSchema,
-  translationHub: translationHubSchema,
 }).superRefine((data, ctx) => {
   const providerIdsSet = new Set(data.providersConfig.map(p => p.id))
   const providerIds = Array.from(providerIdsSet)
