@@ -12,7 +12,11 @@ import { configFieldsAtomMap } from '@/utils/atoms/config'
 import { getProviderConfigById } from '@/utils/config/helpers'
 import { PROVIDER_ITEMS } from '@/utils/constants/providers'
 import { executeTranslate } from '@/utils/host/translate/execute-translate'
-import { selectedProviderIdsAtom, translateRequestAtom, translationCacheAtom } from '../atoms'
+import {
+  selectedProviderIdsAtom,
+  translateRequestAtom,
+  translationCacheAtom,
+} from '../atoms'
 
 interface TranslationCardProps {
   providerId: string
@@ -23,11 +27,15 @@ export function TranslationCard({ providerId }: TranslationCardProps) {
   const request = useAtomValue(translateRequestAtom)
   const language = useAtomValue(configFieldsAtomMap.language)
   const providersConfig = useAtomValue(configFieldsAtomMap.providersConfig)
-  const [selectedProviderIds, setSelectedProviderIds] = useAtom(selectedProviderIdsAtom)
+  const [selectedProviderIds, setSelectedProviderIds] = useAtom(
+    selectedProviderIdsAtom,
+  )
   const [cache, setCache] = useAtom(translationCacheAtom)
 
   const provider = getProviderConfigById(providersConfig, providerId)
-  const providerItem = provider ? PROVIDER_ITEMS[provider.provider as keyof typeof PROVIDER_ITEMS] : undefined
+  const providerItem = provider
+    ? PROVIDER_ITEMS[provider.provider as keyof typeof PROVIDER_ITEMS]
+    : undefined
   const cached = cache[providerId]
 
   const requestIdRef = useRef(0)
@@ -41,18 +49,30 @@ export function TranslationCard({ providerId }: TranslationCardProps) {
 
       const myRequestId = ++requestIdRef.current
       try {
-        const result = await executeTranslate(req.inputText, {
-          sourceCode: req.sourceLanguage,
-          targetCode: req.targetLanguage,
-          level: language.level,
-        }, provider)
-        if (requestIdRef.current === myRequestId)
-          setCache(prev => ({ ...prev, [providerId]: { result, timestamp: req.timestamp } }))
+        const result = await executeTranslate(
+          req.inputText,
+          {
+            sourceCode: req.sourceLanguage,
+            targetCode: req.targetLanguage,
+            level: language.level,
+          },
+          provider,
+        )
+        if (requestIdRef.current === myRequestId) {
+          setCache(prev => ({
+            ...prev,
+            [providerId]: { result, timestamp: req.timestamp },
+          }))
+        }
         return result
       }
       catch (e) {
-        if (requestIdRef.current === myRequestId)
-          setCache(prev => ({ ...prev, [providerId]: { result: e as Error, timestamp: req.timestamp } }))
+        if (requestIdRef.current === myRequestId) {
+          setCache(prev => ({
+            ...prev,
+            [providerId]: { result: e as Error, timestamp: req.timestamp },
+          }))
+        }
         throw e
       }
     },
@@ -69,7 +89,9 @@ export function TranslationCard({ providerId }: TranslationCardProps) {
   }, [request?.timestamp])
 
   const handleRemove = () => {
-    setSelectedProviderIds(selectedProviderIds.filter(id => id !== providerId))
+    setSelectedProviderIds(
+      selectedProviderIds.filter(id => id !== providerId),
+    )
   }
 
   if (!provider)
@@ -81,9 +103,17 @@ export function TranslationCard({ providerId }: TranslationCardProps) {
 
   return (
     <div className="border rounded-lg bg-card">
-      <div className={cn('flex items-center justify-between px-3 py-2', hasContent && 'border-b')}>
+      <div
+        className={cn(
+          'flex items-center justify-between px-3 py-2',
+          hasContent && 'border-b',
+        )}
+      >
         <div className="flex items-center space-x-2">
-          <Icon icon="tabler:grip-vertical" className="h-4 w-4 text-muted-foreground" />
+          <Icon
+            icon="tabler:grip-vertical"
+            className="h-4 w-4 text-muted-foreground"
+          />
           {providerItem
             ? (
                 <ProviderIcon
@@ -100,7 +130,10 @@ export function TranslationCard({ providerId }: TranslationCardProps) {
         </div>
         <div className="flex items-center space-x-1">
           {mutation.isPending && (
-            <Icon icon="tabler:loader-2" className="h-4 w-4 animate-spin text-muted-foreground" />
+            <Icon
+              icon="tabler:loader-2"
+              className="h-4 w-4 animate-spin text-muted-foreground"
+            />
           )}
           {data && !mutation.isPending && (
             <Button
@@ -135,15 +168,18 @@ export function TranslationCard({ providerId }: TranslationCardProps) {
                 <div>
                   <div className="flex items-center space-x-2 text-destructive mb-1">
                     <Icon icon="tabler:alert-circle" className="h-4 w-4" />
-                    <span className="text-sm font-medium">{i18n.t('translationHub.translationFailed')}</span>
+                    <span className="text-sm font-medium">
+                      {i18n.t('translationHub.translationFailed')}
+                    </span>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {(cached?.result as Error).message || i18n.t('translationHub.translationFailedFallback')}
+                    {(cached?.result as Error).message
+                      || i18n.t('translationHub.translationFailedFallback')}
                   </p>
                 </div>
               )
             : (
-                <div className="text-base leading-relaxed whitespace-pre-wrap">
+                <div className="text-base leading-relaxed whitespace-pre-wrap animate-in fade-in duration-300">
                   {data}
                 </div>
               )}
