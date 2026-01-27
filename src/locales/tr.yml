@@ -674,6 +674,8 @@ translationHub:
   deleteCard: Kartı sil
   translationFailed: Çeviri Başarısız
   translationFailedFallback: Çeviri başarısız
+  retryTranslation: Çeviriyi yeniden dene
+  clearInput: Girişi temizle
 languages:
   eng: İngilizce
   cmn: Basitleştirilmiş Çince

@@ -76,6 +76,12 @@ export function TranslationCard({ providerId }: TranslationCardProps) {
     setSelectedProviderIds(selectedProviderIds.filter(id => id !== providerId))
   }
 
+  const handleRetry = () => {
+    if (request?.inputText.trim()) {
+      mutation.mutate(request)
+    }
+  }
+
   if (!provider)
     return null
 
@@ -102,6 +108,17 @@ export function TranslationCard({ providerId }: TranslationCardProps) {
         <div className="flex items-center space-x-1">
           {mutation.isPending && (
             <Icon icon="tabler:loader-2" className="h-4 w-4 animate-spin text-muted-foreground" />
+          )}
+          {!mutation.isPending && hasContent && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleRetry}
+              className="h-7 w-7"
+              title={i18n.t('translationHub.retryTranslation')}
+            >
+              <Icon icon="tabler:refresh" className="h-3.5 w-3.5" />
+            </Button>
           )}
           {mutation.data && !mutation.isPending && (
             <Button
