@@ -677,7 +677,6 @@ translationHub:
   translationFailed: Translation Failed
   translationFailedFallback: Translation failed
   retryTranslation: Retry translation
-  clearInput: Clear input
 languages:
   eng: English
   cmn: Simplified Chinese

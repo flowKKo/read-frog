@@ -675,7 +675,6 @@ translationHub:
   translationFailed: Ошибка перевода
   translationFailedFallback: Ошибка перевода
   retryTranslation: Повторить перевод
-  clearInput: Очистить ввод
 languages:
   eng: Английский
   cmn: Упрощённый китайский

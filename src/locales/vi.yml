@@ -675,7 +675,6 @@ translationHub:
   translationFailed: Dịch Thất Bại
   translationFailedFallback: Dịch thất bại
   retryTranslation: Thử lại dịch
-  clearInput: Xóa nội dung
 languages:
   eng: Tiếng Anh
   cmn: Tiếng Trung giản thể

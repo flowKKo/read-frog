@@ -676,7 +676,6 @@ translationHub:
   translationFailed: 翻譯失敗
   translationFailedFallback: 翻譯失敗
   retryTranslation: 重試翻譯
-  clearInput: 清空輸入
 languages:
   eng: 英語
   cmn: 簡體中文
