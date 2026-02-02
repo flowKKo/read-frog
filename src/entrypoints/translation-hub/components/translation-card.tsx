@@ -54,12 +54,14 @@ export function TranslationCard({ providerId }: TranslationCardProps) {
     },
   })
 
-  // Trigger translation when request changes
-  const triggerTranslation = useEffectEvent(() => {
+  const requestTranslation = () => {
     if (request?.inputText.trim()) {
       mutation.mutate(request)
     }
-  })
+  }
+
+  // Trigger translation when request changes
+  const triggerTranslation = useEffectEvent(requestTranslation)
 
   useEffect(() => {
     triggerTranslation()
@@ -74,12 +76,6 @@ export function TranslationCard({ providerId }: TranslationCardProps) {
 
   const handleRemove = () => {
     setSelectedProviderIds(selectedProviderIds.filter(id => id !== providerId))
-  }
-
-  const handleRetry = () => {
-    if (request?.inputText.trim()) {
-      mutation.mutate(request)
-    }
   }
 
   if (!provider)
@@ -113,7 +109,7 @@ export function TranslationCard({ providerId }: TranslationCardProps) {
             <Button
               variant="ghost"
               size="icon"
-              onClick={handleRetry}
+              onClick={requestTranslation}
               className="h-7 w-7"
               title={i18n.t('translationHub.retryTranslation')}
             >
