@@ -1,5 +1,13 @@
 # @read-frog/extension
 
+## 1.25.2
+
+### Patch Changes
+
+- [#957](https://github.com/mengxi-ream/read-frog/pull/957) [`d2ee3d6`](https://github.com/mengxi-ream/read-frog/commit/d2ee3d618d0cc05252d7a7b045a3c1d31e792340) Thanks [@ishiko732](https://github.com/ishiko732)! - fix: update website URL for custom provider to correct path
+
+- [#954](https://github.com/mengxi-ream/read-frog/pull/954) [`306659f`](https://github.com/mengxi-ream/read-frog/commit/306659fad27d3e3c67ad2cdbd17e22bf0f33c0dd) Thanks [@mengxi-ream](https://github.com/mengxi-ream)! - fix(selection): route selection stream requests through background to bypass CORS restrictions
+
 ## 1.25.1
 
 ### Patch Changes
